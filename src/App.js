@@ -8,9 +8,6 @@ function App() {
       <header className="App-header">
         <div className="App">
         <FileReader/> </div>
-        <div className="App">
-        <Plots setData={this.data}/>
-      </div>
       </header>
     </div>
   );
