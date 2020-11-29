@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import FileReader from './FileReader';
 
@@ -8,11 +7,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="App">
-        <FileReader />
+        <FileReader/> </div>
+        <div className="App">
+        <Plots setData={this.data}/>
       </div>
       </header>
     </div>
   );
+}
+
+function Plots({data}) {
+  console.log(data);
 }
 
 export default App;

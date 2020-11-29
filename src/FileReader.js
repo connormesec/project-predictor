@@ -158,10 +158,22 @@ function getBacklogAndWorkDone(date, array, key) {
 }
 
 function lastElevenLeadTime(array, today) {
-  var count = 0;
   var leadTime = array.slice().sort((a, b) => b['Merged'] - a['Merged']);
- 
-  console.log(leadTime);
+  let leadTimeEleven = [];
+  let j = 0;
+  let i = 0;
+  do {
+   if (leadTime[j]['Merged'] < today && isValidDate(leadTime[j]['Merged'])) {
+    leadTimeEleven.push(leadTime[j]['Lead Time']);
+    i = i + 1;
+     j = j + 1;
+   } else {j = j + 1;}
+  } while (i<11 || i >= leadTime.length)
+  console.log(leadTimeEleven);
+  let msr = computeMeanSdAndItervalRangeMinMax(leadTimeEleven);
+  console.log(msr);
+  console.log(Math.abs(transfomListToExactMeanAndSd(createListOfNNumbersBetweenAAndB(100,msr.range[0],msr.range[1]),msr.mean,msr.sd)[Math.floor(Math.random() * 99)]));
+  return(leadTimeEleven);
 }
 
 
