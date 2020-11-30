@@ -3,14 +3,18 @@ import Plot from 'react-plotly.js';
 
 
 var minimum = new Date();
-var today = new Date('2020-11-02');
+var today = new Date('2020-10-12');
 var forplot = [];
+var mostRecentElevenTicketsArray = [];
+let plotData = [];
 
 function formatData(data) {
     dateChange(data);
+    lastElevenTickets(data, today);
     findEarliestAndLatestDate(data);
     createDateArray(data);
     lastElevenLeadTime(data, today);
+    workInParrallel(mostRecentElevenTicketsArray);
     return data;
 }
 
@@ -126,20 +130,8 @@ function lastElevenLeadTime(array, today) {
     console.log(leadTimeEleven);
     let msr = computeMeanSdAndItervalRangeMinMax(leadTimeEleven);
     console.log(msr);
-    console.log(Math.abs(transfomListToExactMeanAndSd(createListOfNNumbersBetweenAAndB(100, msr.range[0], msr.range[1]), msr.mean, msr.sd)[Math.floor(Math.random() * 99)]));
-    return (leadTimeEleven);
-}
-
-
-var list = createListOfNNumbersBetweenAAndB(1, 1, 10);
-var newList = transfomListToExactMeanAndSd(list, 5, 2);
-
-console.log('transformed list, mean and sd', newList, computeMeanSdAndItervalRangeMinMax(newList));
-console.log('original list, mean and sd', list, computeMeanSdAndItervalRangeMinMax(list));
-
-function createListOfNNumbersBetweenAAndB(n, a, b) {
-    const listOfN = Array(...new Array(n));
-    return listOfN.map(() => Math.random() * (b - a) + a);
+    leadTimeAnalysis(msr);
+    return leadTimeEleven;
 }
 
 function computeMeanSdAndItervalRangeMinMax(list) {
@@ -154,17 +146,129 @@ function computeMeanSdAndItervalRangeMinMax(list) {
     };
 }
 
-function transfomListToExactMeanAndSd(list, mean, sd) {
-    const current = computeMeanSdAndItervalRangeMinMax(list);
-    return list.map(n => sd * (n - current.mean) / current.sd + mean);
+//get the last ll tickets worked to completion
+function lastElevenTickets(array, today) {
+    var temp = array.slice().sort((a, b) => b['Merged'] - a['Merged']);
+    let mostRecentElevenTickets = [];
+    let j = 0;
+    let i = 0;
+    do {
+        if (temp[j]['Merged'] < today && isValidDate(temp[j]['Merged'])) {
+            mostRecentElevenTickets.push(temp[j]);
+            i = i + 1;
+            j = j + 1;
+        } else { j = j + 1; }
+    } while (i < 11 || i >= temp.length)
+    mostRecentElevenTicketsArray = mostRecentElevenTickets;
 }
+
+
+function workInParrallel(array) {
+    let dateRange = [];
+    const lastDay = {date: new Date (today),
+    in_progress: false,
+    merged: false,
+    last_day: true};
+    console.log(array)
+    for (var i = 0; i < array.length; i++) {
+        if(isValidDate(array[i]['In Progress']) && isValidDate(array[i]['Merged'])) {
+            const toadd = [{
+                date: array[i]['In Progress'],
+                in_progress: true,
+                merged: false,
+                last_day: false
+            },{
+                date: array[i]['Merged'],
+                in_progress: false,
+                merged: true,
+                last_day: false
+            }];
+            dateRange = dateRange.concat(toadd);
+        }
+        if(isValidDate(array[i]['In Progress']) && !isValidDate(array[i]['Merged'])) {
+            dateRange = dateRange.concat({
+                date: array[i]['In Progress'],
+                in_progress: true,
+                merged: false,
+                last_day: false
+            });
+        }
+        if(array[i]['In Prgress'] >= today) break;
+    }
+    dateRange = dateRange.concat(lastDay);
+    //[0] earliest date -> [n] last date
+    var filteredDateRange = dateRange.slice().sort((a, b) => a.date - b.date);
+    if (!filteredDateRange[0].in_progress) console.error("something is wrong with this csv, the first item has a merged date before the in progress date");
+    let multiplyer = 1;
+    let sum = 0;
+    for (var j = 0; j < filteredDateRange.length - 1; j++) {
+        
+        sum = sum + ((filteredDateRange[j + 1].date.getTime() - filteredDateRange[j].date.getTime()) * multiplyer);
+        if (filteredDateRange[j + 1].in_progress) {
+            multiplyer++;
+        }
+        if (filteredDateRange[j + 1].merged) {
+            multiplyer--;
+        }
+        if (filteredDateRange[j + 1].last_day) {
+            break;
+        }
+    }
+    let total = today.getTime() - filteredDateRange[0].date.getTime();
+    let workInParrallelValue = sum/total;
+    
+    console.log("workInParrallelValue: " + workInParrallelValue);
+    return workInParrallelValue;
+
+}
+
+
+function leadTimeAnalysis(rangeObject) {
+
+let n = 1000;
+let step = 1;
+let max = rangeObject.range[1];
+let min = rangeObject.range[0];
+let skew = 1.5;
+let temparray = [];
+
+
+const randn_bm = (min, max, skew) => {
+    var u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    let num = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+
+    num = num / 10.0 + 0.5; // Translate to 0 -> 1
+    if (num > 1 || num < 0) num = randn_bm(min, max, skew); // resample between 0 and 1 if out of range
+    num = Math.pow(num, skew); // Skew
+    num *= max - min; // Stretch to fill range
+    num += min; // offset to min
+    return num;
+}
+
+// Create n samples between min and max
+for (let i=0; i<n; i+=step) {
+    let rand_num = randn_bm(min, max, skew);
+    temparray.push(rand_num);
+}
+plotData = temparray;
+}
+
+
+
+
+
+
 
 function Chart(props) {
     const data = formatData(props.data);
-    console.log(forplot.map(o => o.Day));
     return (
+        <div className="parent">
+        <div>
         <Plot
         data={[
+            //backlog
           {
             x: forplot.map(o => o.Day),
             y: forplot.map(o => o.Backlog),
@@ -172,6 +276,7 @@ function Chart(props) {
             mode: 'lines+markers',
             marker: {color: 'red'},
           },
+          //work done
           {
             x: forplot.map(o => o.Day),
             y: forplot.map(o => o.Work_Done),
@@ -182,6 +287,40 @@ function Chart(props) {
         ]}
         layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
       />
+      </div>
+      <div>
+      <Plot
+        data={[
+            //backlog
+            {
+                x: mostRecentElevenTicketsArray.map(o => o['Lead Time']),
+                type: 'histogram',
+                histnorm: 'probability',
+                marker: {
+                    color: 'rgb(255,255,100)',
+                 },
+              },
+        ]}
+        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
+      />
+      </div>
+      <div>
+      <Plot
+        data={[
+            //backlog
+            {
+                x: plotData,
+                type: 'histogram',
+                histnorm: 'probability',
+                marker: {
+                    color: 'rgb(255,255,100)',
+                 },
+              },
+        ]}
+        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
+      />
+      </div>
+      </div>
       );
 }
 export default Chart;
