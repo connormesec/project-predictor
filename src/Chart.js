@@ -6,14 +6,14 @@ var minimum = new Date();
 var today = new Date('2020-10-12');
 var forplot = [];
 var mostRecentElevenTicketsArray = [];
-let plotData = [];
+let randomData = [];
 
 function formatData(data) {
     dateChange(data);
     lastElevenTickets(data, today);
     findEarliestAndLatestDate(data);
     createDateArray(data);
-    lastElevenLeadTime(data, today);
+    //lastElevenLeadTime(data, today);
     workInParrallel(mostRecentElevenTicketsArray);
     return data;
 }
@@ -90,6 +90,7 @@ function createDateArray(array) {
             "Day": addDays(minimum, j),
             "Backlog": getBacklogAndWorkDone(addDays(minimum, j), array, 'Created Date'),
             "Work_Done": getBacklogAndWorkDone(addDays(minimum, j), array, 'Merged'),
+            "Work_Added": getBacklogAndWorkDone(addDays(minimum, j), array, 'Created Date') - getBacklogAndWorkDone(addDays(minimum, j-1), array, 'Created Date'),
         }
         xaxis[j] = day;
     }
@@ -127,10 +128,6 @@ function lastElevenLeadTime(array, today) {
             j = j + 1;
         } else { j = j + 1; }
     } while (i < 11 || i >= leadTime.length)
-    console.log(leadTimeEleven);
-    let msr = computeMeanSdAndItervalRangeMinMax(leadTimeEleven);
-    console.log(msr);
-    leadTimeAnalysis(msr);
     return leadTimeEleven;
 }
 
@@ -142,8 +139,52 @@ function computeMeanSdAndItervalRangeMinMax(list) {
     return {
         mean: mean,
         sd: Math.sqrt(sumMinusMean / (list.length - 1)),
+        mode: median(mode(list)),
+        median: median(list),
         range: [Math.min(...list), Math.max(...list)]
     };
+}
+
+function mode(numbers) {
+    // as result can be bimodal or multi-modal,
+    // the returned result is provided as an array
+    // mode of [3, 5, 4, 4, 1, 1, 2, 3] = [1, 3, 4]
+    var modes = [], count = [], i, number, maxIndex = 0;
+ 
+    for (i = 0; i < numbers.length; i += 1) {
+        number = numbers[i];
+        count[number] = (count[number] || 0) + 1;
+        if (count[number] > maxIndex) {
+            maxIndex = count[number];
+        }
+    }
+ 
+    for (i in count)
+        if (count.hasOwnProperty(i)) {
+            if (count[i] === maxIndex) {
+                modes.push(Number(i));
+            }
+        }
+ 
+    return modes;
+}
+
+function median(numbers) {
+    // median of [3, 5, 4, 4, 1, 1, 2, 3] = 3
+    var median = 0, numsLen = numbers.length;
+    numbers.sort();
+ 
+    if (
+        numsLen % 2 === 0 // is even
+    ) {
+        // average of two middle numbers
+        median = (numbers[numsLen / 2 - 1] + numbers[numsLen / 2]) / 2;
+    } else { // is odd
+        // middle number only
+        median = numbers[(numsLen - 1) / 2];
+    }
+ 
+    return median;
 }
 
 //get the last ll tickets worked to completion
@@ -169,7 +210,6 @@ function workInParrallel(array) {
     in_progress: false,
     merged: false,
     last_day: true};
-    console.log(array)
     for (var i = 0; i < array.length; i++) {
         if(isValidDate(array[i]['In Progress']) && isValidDate(array[i]['Merged'])) {
             const toadd = [{
@@ -217,7 +257,6 @@ function workInParrallel(array) {
     let total = today.getTime() - filteredDateRange[0].date.getTime();
     let workInParrallelValue = sum/total;
     
-    console.log("workInParrallelValue: " + workInParrallelValue);
     return workInParrallelValue;
 
 }
@@ -225,11 +264,11 @@ function workInParrallel(array) {
 
 function leadTimeAnalysis(rangeObject) {
 
-let n = 1000;
+let n = 10000;
 let step = 1;
 let max = rangeObject.range[1];
 let min = rangeObject.range[0];
-let skew = 1.5;
+let skew = 0;
 let temparray = [];
 
 
@@ -237,24 +276,64 @@ const randn_bm = (min, max, skew) => {
     var u = 0, v = 0;
     while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
     while(v === 0) v = Math.random();
-    let num = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+    const R = Math.sqrt(-2.0 * Math.log(u));
+    const Θ = 2.0 * Math.PI * v;
+    const test = [R * Math.cos(Θ), R * Math.sin(Θ)];
+    const ξ = rangeObject.median;
+    const ω = rangeObject.sd;
+    const α = (( max - ξ )/ ω );
+    function randomSkewNormal(test, ξ, ω, α) {
+        const [u0, v] = test;
+        if (α === 0) {
+            return ξ + ω * u0;
+        }
+        const 𝛿 = α / Math.sqrt(1 + α * α);
+        const u1 = 𝛿 * u0 + Math.sqrt(1 - 𝛿 * 𝛿) * v;
+        const z = u0 >= 0 ? u1 : -u1;
+        let num = ξ + ω * z;
+        if (num < 0) num = randn_bm(min, max, skew);
+        return num;
+    }
+    // console.log(randomSkewNormal);
+    // let num = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 
-    num = num / 10.0 + 0.5; // Translate to 0 -> 1
-    if (num > 1 || num < 0) num = randn_bm(min, max, skew); // resample between 0 and 1 if out of range
-    num = Math.pow(num, skew); // Skew
-    num *= max - min; // Stretch to fill range
-    num += min; // offset to min
-    return num;
+    // num = num / 10.0 + 0.5; // Translate to 0 -> 1
+    // if (num > 1 || num < 0) num = randn_bm(min, max, skew); // resample between 0 and 1 if out of range
+    // num = Math.pow(num, skew); // Skew
+    // num *= max - min; // Stretch to fill range
+    // num += min; // offset to min
+    // //return num;
+    return randomSkewNormal(test,ξ,ω,3);
 }
-
 // Create n samples between min and max
 for (let i=0; i<n; i+=step) {
     let rand_num = randn_bm(min, max, skew);
     temparray.push(rand_num);
 }
-plotData = temparray;
+
+return temparray;
 }
 
+function monteCarlo (dates, randomNumsLeadTime, randomNumsWorkAdded) {
+    let workLeft = dates[dates.length - 1].Backlog - dates[dates.length - 1].Work_Done;
+    let adjustedWorkLeft = workLeft / workInParrallel(mostRecentElevenTicketsArray);
+    let sum = 0;
+    while (sum<adjustedWorkLeft) {
+        sum += randomNumsLeadTime[Math.floor(Math.random() * randomNumsLeadTime.length)];
+    }
+    return sum + sum * randomNumsWorkAdded[Math.floor(Math.random() * randomNumsWorkAdded.length)];
+}
+
+function runMonteCarlo (n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
+    let runArray = [];
+    let workAdded = leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added)));
+    for (let i=0; i<n; i++) {
+        runArray.push(monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded));
+    }
+    console.log(computeMeanSdAndItervalRangeMinMax(runArray));
+    console.log(workInParrallel(mostRecentElevenTicketsArray));
+    return runArray;
+}
 
 
 
@@ -262,7 +341,9 @@ plotData = temparray;
 
 
 function Chart(props) {
-    const data = formatData(props.data);
+    console.log(formatData(props.data));
+    leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today)));
+    console.log(forplot.map(o => o.Work_Added));
     return (
         <div className="parent">
         <div>
@@ -309,7 +390,55 @@ function Chart(props) {
         data={[
             //backlog
             {
-                x: plotData,
+                x: leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today))),
+                type: 'histogram',
+                histnorm: 'probability',
+                marker: {
+                    color: 'rgb(255,255,100)',
+                 },
+              },
+        ]}
+        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
+      />
+      </div>
+      <div>
+      <Plot
+        data={[
+            //monteCarlo
+            {
+                x: runMonteCarlo(1000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today))), leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added)))),
+                type: 'histogram',
+                histnorm: 'probability',
+                marker: {
+                    color: 'rgb(255,100,100)',
+                 },
+              },
+        ]}
+        layout={ {width: 500, height: 500, title: 'Monte Carlo'} }
+      />
+      </div>
+      <div>
+      <Plot
+        data={[
+            //backlog
+            {
+                x: forplot.map(o => o.Work_Added),
+                type: 'histogram',
+                histnorm: 'probability',
+                marker: {
+                    color: 'rgb(255,255,100)',
+                 },
+              },
+        ]}
+        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
+      />
+      </div>
+      <div>
+      <Plot
+        data={[
+            //backlog
+            {
+                x: leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added))),
                 type: 'histogram',
                 histnorm: 'probability',
                 marker: {
