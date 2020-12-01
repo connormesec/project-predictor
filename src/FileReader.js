@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from "react";
 import Papa from 'papaparse';
 import Chart from './Chart';
+import DatePicker from "react-datepicker";
 
+var today = new Date();
 class FileReader extends React.Component {
   constructor() {
     super();
     this.state = {
       csvfile: undefined,
-      data: undefined
+      data: undefined,
+      today: today
     };
     this.updateData = this.updateData.bind(this);
   }
@@ -33,11 +36,20 @@ class FileReader extends React.Component {
     });
   }
 
+  updateToday(result) {
+    var data = result.data;
+    this.setState({
+      today: data
+    });
+  }
+
   render() {
     console.log(this.state.csvfile);
+    console.log(this.state);
     if (!this.state.data) {
       return (
         <div className="App">
+          <div><DatePickerThing /></div>
           <h2>Import CSV File!</h2>
           <input
             className="csv-input"
@@ -62,5 +74,15 @@ class FileReader extends React.Component {
     }
 
   }
+}
+
+
+function DatePickerThing(){
+  const [startDate, setStartDate] = useState(new Date());
+  today = startDate;
+  console.log(today);
+  return (
+    <DatePicker selected={startDate} onChange={date => setStartDate(date)} />
+  );
 }
 export default FileReader;

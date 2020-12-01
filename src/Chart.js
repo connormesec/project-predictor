@@ -72,8 +72,6 @@ function findEarliestAndLatestDate(dateArray) {
         if (isValidDate(dateArray[i]['In Progress']) && isValidDate(dateArray[minIdx]['In Progress']) == false) minIdx = i;
     }
     minimum = new Date(dateArray[minIdx]['In Progress']);
-    console.log(minimum);
-    //maximum = new Date(dateArray[maxIdx]['In Progress']);
     return dateArray;
 }
 
@@ -83,7 +81,6 @@ function isValidDate(date) {
 
 function createDateArray(array) {
     var graphXAxisNum = Math.floor(today.getTime() - minimum.getTime()) / 86400000;
-    console.log(graphXAxisNum);
     var xaxis = [];
     for (var j = 0; j < graphXAxisNum; j++) {
         let day = {
@@ -95,7 +92,6 @@ function createDateArray(array) {
         xaxis[j] = day;
     }
     forplot = xaxis;
-    console.log(xaxis);
 }
 
 function addDays(date, days) {
@@ -133,7 +129,7 @@ function lastElevenLeadTime(array, today) {
 
 function computeMeanSdAndItervalRangeMinMax(list) {
     const sum = list.reduce((a, b) => a + b, 0);
-    const mean = sum / list.length;
+    const mean = list.reduce((a, b) => a + b) / list.length;
     const sumMinusMean = list.reduce((a, b) => a + (b - mean) * (b - mean), 0);
 
     return {
@@ -326,24 +322,22 @@ function monteCarlo (dates, randomNumsLeadTime, randomNumsWorkAdded) {
 
 function runMonteCarlo (n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
     let runArray = [];
-    let workAdded = leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added)));
     for (let i=0; i<n; i++) {
         runArray.push(monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded));
     }
-    console.log(computeMeanSdAndItervalRangeMinMax(runArray));
-    console.log(workInParrallel(mostRecentElevenTicketsArray));
-    return runArray;
+    let monteCarloResults = {
+        daysToCompletionArray: runArray,
+        finalDistributionValuies: computeMeanSdAndItervalRangeMinMax(runArray),
+        workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray)
+    };
+    console.log(monteCarloResults);
+    return monteCarloResults;
 }
-
-
-
-
 
 
 function Chart(props) {
     console.log(formatData(props.data));
     leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today)));
-    console.log(forplot.map(o => o.Work_Added));
     return (
         <div className="parent">
         <div>
@@ -406,7 +400,7 @@ function Chart(props) {
         data={[
             //monteCarlo
             {
-                x: runMonteCarlo(1000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today))), leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added)))),
+                x: runMonteCarlo(10000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today))), leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added)))).daysToCompletionArray,
                 type: 'histogram',
                 histnorm: 'probability',
                 marker: {
