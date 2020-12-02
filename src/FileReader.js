@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Papa from 'papaparse';
 import Chart from './Chart';
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 var today = new Date();
 class FileReader extends React.Component {
@@ -32,7 +33,8 @@ class FileReader extends React.Component {
   updateData(result) {
     var data = result.data;
     this.setState({
-      data: data
+      data: data,
+      today: today
     });
   }
 
@@ -48,8 +50,7 @@ class FileReader extends React.Component {
     console.log(this.state);
     if (!this.state.data) {
       return (
-        <div className="App">
-          <div><DatePickerThing /></div>
+        <div>
           <h2>Import CSV File!</h2>
           <input
             className="csv-input"
@@ -62,13 +63,15 @@ class FileReader extends React.Component {
             onChange={this.handleChange}
           />
           <p />
+          <div><DatePickerThing /></div>
+          <p />
           <button onClick={this.importCSV}>RUN!</button>
         </div>
       );
     } else {
       return (
         <div>
-          <Chart data={this.state.data} />
+          <Chart data={this.state} />
         </div>
       )
     }

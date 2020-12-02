@@ -3,7 +3,7 @@ import Plot from 'react-plotly.js';
 
 
 var minimum = new Date();
-var today = new Date('2020-10-12');
+var today = new Date();
 var forplot = [];
 var mostRecentElevenTicketsArray = [];
 let randomData = [];
@@ -137,7 +137,9 @@ function computeMeanSdAndItervalRangeMinMax(list) {
         sd: Math.sqrt(sumMinusMean / (list.length - 1)),
         mode: median(mode(list)),
         median: median(list),
-        range: [Math.min(...list), Math.max(...list)]
+        range: [Math.min(...list), Math.max(...list)],
+        best_case: mean - 2 * (Math.sqrt(sumMinusMean / (list.length - 1))),
+        worst_case: mean + 2 * (Math.sqrt(sumMinusMean / (list.length - 1)))
     };
 }
 
@@ -287,7 +289,7 @@ const randn_bm = (min, max, skew) => {
         const u1 = 𝛿 * u0 + Math.sqrt(1 - 𝛿 * 𝛿) * v;
         const z = u0 >= 0 ? u1 : -u1;
         let num = ξ + ω * z;
-        if (num < 0) num = randn_bm(min, max, skew);
+        if (num < 0) num = 0;
         return num;
     }
     // console.log(randomSkewNormal);
@@ -328,122 +330,180 @@ function runMonteCarlo (n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
     let monteCarloResults = {
         daysToCompletionArray: runArray,
         finalDistributionValuies: computeMeanSdAndItervalRangeMinMax(runArray),
-        workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray)
+        workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray),
+        randomWorkAdded: computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded),
+        bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(forplot, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded))
     };
     console.log(monteCarloResults);
     return monteCarloResults;
 }
 
+function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, randomWorkAdded) {
+    let lastDay = historicalData[historicalData.length - 1].Day.getTime() / 86400000;
+    let lastDayBacklogTotal = historicalData[historicalData.length - 1].Backlog;
+    let lastDayDoneTotal = historicalData[historicalData.length - 1].Work_Done;
+    let worstCaseDays = finalDistributionValuies.worst_case;
+    let bestCaseDays = finalDistributionValuies.best_case;
+    let averageWorkAdded = randomWorkAdded.mean;
+    let resultArray = [];
+    for (let i=0; i<worstCaseDays; i++) {
+        resultArray.push(
+            {
+                day : new Date((i + lastDay)*86400000),
+                backlogIncrease : averageWorkAdded * i + lastDayBacklogTotal,
+                doneWorstCase : i*((averageWorkAdded * i + lastDayBacklogTotal)/(worstCaseDays + lastDayDoneTotal)) + lastDayDoneTotal,
+                doneBestCase : i*((averageWorkAdded * i + lastDayBacklogTotal)/(bestCaseDays + lastDayDoneTotal)) + lastDayDoneTotal
+            }
+        )
+    }
+    console.log(resultArray);
+    return resultArray;
+}
+
 
 function Chart(props) {
-    console.log(formatData(props.data));
-    leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today)));
-    return (
-        <div className="parent">
+    
+    today = props.data.today;
+    console.log(props.data.today);
+
+    leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data.data), today)));
+    let myBoyMonte = runMonteCarlo(10000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data.data), today))), leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added))));
+    console.log(forplot);
+
+    return (     
         <div>
-        <Plot
-        data={[
-            //backlog
-          {
-            x: forplot.map(o => o.Day),
-            y: forplot.map(o => o.Backlog),
-            type: 'scatter',
-            mode: 'lines+markers',
-            marker: {color: 'red'},
-          },
-          //work done
-          {
-            x: forplot.map(o => o.Day),
-            y: forplot.map(o => o.Work_Done),
-            type: 'scatter',
-            mode: 'lines+markers',
-            marker: {color: 'green'},
-          }
-        ]}
-        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
-      />
-      </div>
-      <div>
-      <Plot
-        data={[
-            //backlog
-            {
-                x: mostRecentElevenTicketsArray.map(o => o['Lead Time']),
-                type: 'histogram',
-                histnorm: 'probability',
-                marker: {
-                    color: 'rgb(255,255,100)',
-                 },
-              },
-        ]}
-        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
-      />
-      </div>
-      <div>
-      <Plot
-        data={[
-            //backlog
-            {
-                x: leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today))),
-                type: 'histogram',
-                histnorm: 'probability',
-                marker: {
-                    color: 'rgb(255,255,100)',
-                 },
-              },
-        ]}
-        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
-      />
-      </div>
-      <div>
-      <Plot
-        data={[
-            //monteCarlo
-            {
-                x: runMonteCarlo(10000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data), today))), leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added)))).daysToCompletionArray,
-                type: 'histogram',
-                histnorm: 'probability',
-                marker: {
-                    color: 'rgb(255,100,100)',
-                 },
-              },
-        ]}
-        layout={ {width: 500, height: 500, title: 'Monte Carlo'} }
-      />
-      </div>
-      <div>
-      <Plot
-        data={[
-            //backlog
-            {
-                x: forplot.map(o => o.Work_Added),
-                type: 'histogram',
-                histnorm: 'probability',
-                marker: {
-                    color: 'rgb(255,255,100)',
-                 },
-              },
-        ]}
-        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
-      />
-      </div>
-      <div>
-      <Plot
-        data={[
-            //backlog
-            {
-                x: leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added))),
-                type: 'histogram',
-                histnorm: 'probability',
-                marker: {
-                    color: 'rgb(255,255,100)',
-                 },
-              },
-        ]}
-        layout={ {width: 500, height: 500, title: 'A Fancy Plot'} }
-      />
-      </div>
-      </div>
+            <div className="container">
+                <div className="plot">
+                    <Plot
+                        data={[
+                            //backlog
+                            {
+                                x: forplot.map(o => o.Day),
+                                y: forplot.map(o => o.Backlog),
+                                type: 'scatter',
+                                mode: 'lines+markers',
+                                marker: { color: 'red' },
+                            },
+                            //work done
+                            {
+                                x: forplot.map(o => o.Day),
+                                y: forplot.map(o => o.Work_Done),
+                                type: 'scatter',
+                                mode: 'lines+markers',
+                                marker: { color: 'green' },
+                            },
+                            {
+                                x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
+                                y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.backlogIncrease),
+                                type: 'scatter',
+                                mode: 'lines+markers',
+                                marker: { color: 'pink' },
+                            },
+                            {
+                                x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
+                                y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneWorstCase),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'red' },
+                            },
+                            {
+                                x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
+                                y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneBestCase),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'green' },
+                            },
+                        ]}
+                        layout={{ width: 500, height: 500, title: 'CFD' }}
+                    />
+                </div>
+                <div className="plot">
+                    <Plot
+                        data={[
+                            //monteCarlo
+                            {
+                                x: myBoyMonte.daysToCompletionArray,
+                                type: 'histogram',
+                                histnorm: 'probability',
+                                marker: {
+                                    color: 'rgb(255,100,100)',
+                                },
+                            },
+                        ]}
+                        layout={{ width: 500, height: 500, title: 'Monte Carlo' }}
+                    />
+                </div>
+            </div>
+            <div className="container">
+                <div className="plot">
+                    <Plot
+                        data={[
+                            //backlog
+                            {
+                                x: mostRecentElevenTicketsArray.map(o => o['Lead Time']),
+                                type: 'histogram',
+                                histnorm: 'probability',
+                                marker: {
+                                    color: 'rgb(255,255,100)',
+                                },
+                            },
+                        ]}
+                        layout={{ width: 500, height: 500, title: 'Lead Time Frequency Diagram' }}
+                    />
+                </div>
+                <div className="plot">
+                    <Plot
+                        data={[
+                            //backlog
+                            {
+                                x: leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formatData(props.data.data), today))),
+                                type: 'histogram',
+                                histnorm: 'probability',
+                                marker: {
+                                    color: 'rgb(255,255,100)',
+                                },
+                            },
+                        ]}
+                        layout={{ width: 500, height: 500, title: 'Lead Time Random Numbers' }}
+                    />
+                </div>
+            </div>
+            <div className="container">
+                <div className="plot">
+                    <Plot
+                        data={[
+                            //backlog
+                            {
+                                x: forplot.map(o => o.Work_Added),
+                                type: 'histogram',
+                                histnorm: 'probability',
+                                marker: {
+                                    color: 'rgb(255,255,100)',
+                                },
+                            },
+                        ]}
+                        layout={{ width: 500, height: 500, title: 'Work Added Frequency Diagram' }}
+                    />
+                </div>
+                <div className="plot">
+                    <Plot
+                        data={[
+                            //backlog
+                            {
+                                x: leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added))),
+                                type: 'histogram',
+                                histnorm: 'probability',
+                                marker: {
+                                    color: 'rgb(255,255,100)',
+                                },
+                            },
+                        ]}
+                        layout={{ width: 500, height: 500, title: 'Work Added Random Numbers' }}
+                    />
+                </div>
+            </div>
+        </div>
+
       );
 }
 export default Chart;
