@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #4a75a7;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -37,8 +37,11 @@ body {
 }
 
 .container {
-  width: 1000px;
+  width: 100%;
   height: 500px;
+  display: flex;
+  justify-content: center;
+  background-color: #4a75a7;
 }
 
 /* Style the header */
@@ -51,10 +54,9 @@ body {
 
 /* Create three equal columns that floats next to each other */
 .plot {
-  float: left;
   width: 500px;
-  padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
+  height: 300px;
+   /* Should be removed. Only for demonstration */
 }
 
 /* Clear floats after the columns */
