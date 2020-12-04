@@ -38,10 +38,17 @@ body {
 
 .container {
   width: 100%;
-  height: 500px;
+  height: 520px;
   display: flex;
   justify-content: center;
   background-color: #4a75a7;
+  padding: 10px;
+}
+
+.dataBox {
+  width: 300px;
+  height: 500px;
+  background-color: #f1f1f1;
 }
 
 /* Style the header */
