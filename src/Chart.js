@@ -111,24 +111,24 @@ function getBacklogAndWorkDone(date, array, key) {
     return count;
 }
 
-function lastElevenLeadTime(array, today) {
-    var leadTime = array.slice().sort((a, b) => b['Merged'] - a['Merged']);
-    let leadTimeEleven = [];
-    let j = 0;
-    let i = 0;
+// function lastElevenLeadTime(array, today) {
+//     var leadTime = array.slice().sort((a, b) => b['Merged'] - a['Merged']);
+//     let leadTimeEleven = [];
+//     let j = 0;
+//     let i = 0;
 
-    let l = 0;
-    let testarr = [];
+//     let l = 0;
+//     let testarr = [];
 
-    for (var k = 0; k < leadTime.length; k++) {
-        if (isValidDate(leadTime[k]['Merged']) && leadTime[k]['Merged'] < today) {
-            leadTimeEleven.push(leadTime[k]['Lead Time']);
-            l = l + 1;
-        }
-    }
-
-    return leadTimeEleven;
-}
+//     for (var k = 0; k < leadTime.length; k++) {
+//         if (isValidDate(leadTime[k]['Merged']) && leadTime[k]['Merged'] < today && leadTime[k]['Lead Time'] < 15) {
+//             leadTimeEleven.push(leadTime[k]['Lead Time']);
+//             l = l + 1;
+//         }
+//     }
+//     console.log(leadTimeEleven)
+//     return leadTimeEleven;
+// }
 
 function computeMeanSdAndItervalRangeMinMax(list) {
     const sum = list.reduce((a, b) => a + b, 0);
@@ -196,13 +196,15 @@ function lastElevenTickets(array, today) {
     let testarr = [];
 
     for (var k = 0; k < temp.length; k++) {
-        if (isValidDate(temp[k]['Merged']) && temp[k]['Merged'] < today) {
+        if (l >= 11) break;
+        if (isValidDate(temp[k]['Merged']) && temp[k]['Merged'] < today && temp[k]['Lead Time'] < 15) {
             testarr.push(temp[k]);
             l = l + 1;
         }
     }
-
-    mostRecentElevenTicketsArray = testarr;
+    console.log(testarr)
+    mostRecentElevenTicketsArray = testarr
+    return testarr;
 }
 
 
@@ -422,38 +424,6 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
     return resultArray;
 }
 
-function filterOutliers(someArray) {  
-
-    // Copy the values, rather than operating on references to existing values
-    var values = someArray.concat();
-
-    // Then sort
-    values.sort( function(a, b) {
-            return a - b;
-         });
-
-    /* Then find a generous IQR. This is generous because if (values.length / 4) 
-     * is not an int, then really you should average the two elements on either 
-     * side to find q1.
-     */     
-    var q1 = values[Math.floor((values.length / 4))];
-    // Likewise for q3. 
-    var q3 = values[Math.ceil((values.length * (3 / 4)))];
-    var iqr = q3 - q1;
-
-    // Then find min and max values
-    var maxValue = q3 + iqr*1.5;
-    var minValue = q1 - iqr*1.5;
-
-    // Then filter anything beyond or beneath these values.
-    var filteredValues = values.filter(function(x) {
-        return (x <= maxValue) && (x >= minValue);
-    });
-
-    // Then return
-    return filteredValues;
-}
-
 
 function Chart(props) {
 
@@ -467,12 +437,12 @@ function Chart(props) {
     //set forplot
     createDateArray(formattedData);
 
-    const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formattedData, today)); 
+    const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])); 
     const randLastElevenData = computeMeanSdAndItervalRangeMinMax(leadTimeAnalysis(lastElevenData));
     const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(mostRecentElevenTicketsArray.map(o => o['Lead Time']));
     const workAdded = computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added));
     const randWorkadded = computeMeanSdAndItervalRangeMinMax(leadTimeAnalysis(workAdded));
-    let myBoyMonte = runMonteCarlo(10000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenLeadTime(formattedData, today))), forplot.map(o => o.Work_Added));
+    let myBoyMonte = runMonteCarlo(10000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']))), forplot.map(o => o.Work_Added));
 
     if (!myBoyMonte) return <div> Loading... </div>;
     return (
@@ -557,7 +527,7 @@ function Chart(props) {
             <div className="dataBox">
                     <h1>Lead Time</h1>
                     <h3>Historical Values</h3>
-                <p>{filterOutliers(mostRecentElevenTicketsArray.map(o => o['Lead Time'])).map((o) => <>{o},</>)}</p>
+                <p>{mostRecentElevenTicketsArray.map(o => o['Lead Time']).map((o) => <>{o},</>)}</p>
                     <p>Mean: {Math.round(historicalLastElevenTickets.mean * 100)/100}</p>
                     <p>Median: {Math.round(historicalLastElevenTickets.median * 100)/100}</p>
                     <p>Std Dev: {Math.round(historicalLastElevenTickets.sd * 100)/100}</p>
