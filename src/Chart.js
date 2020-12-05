@@ -4,9 +4,11 @@ import Plot from 'react-plotly.js';
 
 var minimum = new Date();
 var today = new Date();
+var startDate = new Date();
 var forplot = [];
 var mostRecentElevenTicketsArray = [];
 var createdDate = 'Created';
+const leadTimeMaxValue = 10;
 
 function dateChange(data) {
     let data3 = data.map(datastring => {
@@ -71,7 +73,11 @@ function findEarliestAndLatestDate(dateArray) {
         }
         if (isValidDate(dateArray[i]['In Progress']) && isValidDate(dateArray[minIdx]['In Progress']) == false) minIdx = i;
     }
-    minimum = new Date(dateArray[minIdx]['In Progress']);
+    if (!startDate) {
+     minimum = new Date(dateArray[minIdx]['In Progress']);
+    } else {
+        minimum = startDate;
+    }
 }
 
 function isValidDate(date) {
@@ -111,24 +117,6 @@ function getBacklogAndWorkDone(date, array, key) {
     return count;
 }
 
-// function lastElevenLeadTime(array, today) {
-//     var leadTime = array.slice().sort((a, b) => b['Merged'] - a['Merged']);
-//     let leadTimeEleven = [];
-//     let j = 0;
-//     let i = 0;
-
-//     let l = 0;
-//     let testarr = [];
-
-//     for (var k = 0; k < leadTime.length; k++) {
-//         if (isValidDate(leadTime[k]['Merged']) && leadTime[k]['Merged'] < today && leadTime[k]['Lead Time'] < 15) {
-//             leadTimeEleven.push(leadTime[k]['Lead Time']);
-//             l = l + 1;
-//         }
-//     }
-//     console.log(leadTimeEleven)
-//     return leadTimeEleven;
-// }
 
 function computeMeanSdAndItervalRangeMinMax(list) {
     const sum = list.reduce((a, b) => a + b, 0);
@@ -197,7 +185,7 @@ function lastElevenTickets(array, today) {
 
     for (var k = 0; k < temp.length; k++) {
         if (l >= 11) break;
-        if (isValidDate(temp[k]['Merged']) && temp[k]['Merged'] < today && temp[k]['Lead Time'] < 15) {
+        if (isValidDate(temp[k]['Merged']) && temp[k]['Merged'] < today && temp[k]['Lead Time'] < leadTimeMaxValue) {
             testarr.push(temp[k]);
             l = l + 1;
         }
@@ -426,8 +414,9 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
 
 
 function Chart(props) {
-
+    console.log(props);
     today = props.data.today;
+    startDate = props.data.startDate;
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
     //set mostRecentElevenTicketsArray
     lastElevenTickets(formattedData, today);
@@ -571,7 +560,7 @@ function Chart(props) {
             </div>
             <div className="container">
             <div className="dataBox">
-                    <h1>Lead Time</h1>
+                    <h1>Work Added</h1>
                     <h3>Historical Values</h3>
                     <p>Mean: {Math.round(workAdded.mean * 100)/100}</p>
                     <p>Median: {Math.round(workAdded.median * 100)/100}</p>
