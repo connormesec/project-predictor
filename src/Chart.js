@@ -2,10 +2,10 @@ import React from 'react';
 import Plot from 'react-plotly.js';
 import skewnorm from 'skew-normal-random';
 
-var minimum = new Date();
+//var minimum = new Date();
 //var today = new Date();
-var startDate
-var mostRecentElevenTicketsArray = [];
+//var startDate
+//var mostRecentElevenTicketsArray = [];
 var createdDate = 'Created';
 const leadTimeMaxValue = 15;
 
@@ -63,7 +63,7 @@ function calcBusinessDays(dDate1, dDate2) {         // input given as Date objec
 
 }
 
-function findEarliestAndLatestDate(dateArray) {
+function findEarliestDate(dateArray, startDate) {
     var minIdx = 0, maxIdx = 0;
     for (var i = 0; i < dateArray.length; i++) {
         if (isValidDate(dateArray[i]['In Progress']) && isValidDate(dateArray[minIdx]['In Progress'])) {
@@ -73,9 +73,9 @@ function findEarliestAndLatestDate(dateArray) {
         if (isValidDate(dateArray[i]['In Progress']) && isValidDate(dateArray[minIdx]['In Progress']) == false) minIdx = i;
     }
     if (!startDate) {
-        minimum = new Date(dateArray[minIdx]['In Progress']);
+        return new Date(dateArray[minIdx]['In Progress']);
     } else {
-        minimum = startDate;
+        return startDate;
     }
 }
 
@@ -83,7 +83,7 @@ function isValidDate(date) {
     return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
 }
 
-function createDateArray(array, today) {
+function createDateArray(array, today, minimum) {
     var graphXAxisNum = Math.floor(today.getTime() - minimum.getTime()) / 86400000;
     var xaxis = [];
     for (var j = 0; j < graphXAxisNum; j++) {
@@ -194,7 +194,7 @@ function lastElevenTickets(array, today) {
             l = l + 1;
         }
     }
-    mostRecentElevenTicketsArray = testarr
+    //mostRecentElevenTicketsArray = testarr
     return testarr;
 }
 
@@ -327,24 +327,24 @@ function randNumFromDistribution(rangeObject, distributionType) {
     return temparray;
 }
 
-function monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded, today) {
+function monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded, today, formattedData) {
     let workLeft = dates[dates.length - 1].Backlog - dates[dates.length - 1].Work_Done;
-    let adjustedWorkLeft = workLeft / workInParrallel(mostRecentElevenTicketsArray, today);
+    let adjustedWorkLeft = workLeft / workInParrallel(lastElevenTickets(formattedData, today), today);
     let sum = randomNumsLeadTime[Math.floor(Math.random() * randomNumsLeadTime.length)] * adjustedWorkLeft;
     if (sum < 0) sum = 0;
     
     return sum //* (1 + randomNumsWorkAdded[Math.floor(Math.random() * randomNumsWorkAdded.length)]);
 }
 
-function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded, historicalData, today) {
+function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded, today, formattedData) {
     let runArray = [];
     for (let i = 0; i < n; i++) {
-        runArray.push(monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded, today));
+        runArray.push(monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded, today, formattedData));
     }
     let monteCarloResults = {
         daysToCompletionArray: runArray,
         finalDistributionValuies: computeMeanSdAndItervalRangeMinMax(runArray),
-        workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray, today),
+        workInParrallelValue: workInParrallel(lastElevenTickets(formattedData, today), today),
         randomWorkAdded: computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded),
         confidence: getConfidence(runArray),
         bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(dates, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded), getConfidence(runArray))
@@ -455,7 +455,7 @@ function formatDate(date) {
 
 function test(startDate, today, formattedData, distType, ) {
     let randomArr = randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType);
-    runMonteCarlo(10000, createDateArray(formattedData, today), randomArr, createDateArray(formattedData, today).map(o => o.Work_Added))
+    runMonteCarlo(10000, createDateArray(formattedData, today), randomArr, createDateArray(formattedData, today).map(o => o.Work_Added), today)
 }
 
 
@@ -463,24 +463,19 @@ function Chart(props) {
     console.log(props);
     let today = new Date(props.data.today);
     const distType = props.data.isChecked;
-    startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
+    let startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
     
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
     if (!props.data.isTest) {
-    //set mostRecentElevenTicketsArray
-    lastElevenTickets(formattedData, today);
-    workInParrallel(mostRecentElevenTicketsArray, today);
-    //set minimum
-    findEarliestAndLatestDate(formattedData);
-    //set forplot
-    let forplot = createDateArray(formattedData, today);
+
+    let forplot = createDateArray(formattedData, today, findEarliestDate(formattedData, startDate));
     console.log(forplot);
     const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
     const randLastElevenData = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(lastElevenData), distType);
-    const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(mostRecentElevenTicketsArray.map(o => o['Lead Time']));
+    const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
     const workAdded = computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added));
     const randWorkadded = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(workAdded));
-    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added), forplot, today);
+    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added), today, formattedData);
 
     
         return (
@@ -566,7 +561,7 @@ function Chart(props) {
                     <div className="dataBox">
                         <h1>Lead Time</h1>
                         <h3>Historical Values</h3>
-                        <p>{mostRecentElevenTicketsArray.map(o => o['Lead Time']).map((o) => <>{o},</>)}</p>
+                        <p>{lastElevenTickets(formattedData, today).map(o => o['Lead Time']).map((o) => <>{o},</>)}</p>
                         <p>Mean: {Math.round(historicalLastElevenTickets.mean * 100) / 100}</p>
                         <p>Median: {Math.round(historicalLastElevenTickets.median * 100) / 100}</p>
                         <p>Std Dev: {Math.round(historicalLastElevenTickets.sd * 100) / 100}</p>
@@ -581,7 +576,7 @@ function Chart(props) {
                             data={[
                                 //backlog
                                 {
-                                    x: mostRecentElevenTicketsArray.map(o => o['Lead Time']),
+                                    x: lastElevenTickets(formattedData, today).map(o => o['Lead Time']),
                                     type: 'histogram',
                                     histnorm: 'probability',
                                     marker: {
