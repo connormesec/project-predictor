@@ -3,9 +3,8 @@ import Plot from 'react-plotly.js';
 import skewnorm from 'skew-normal-random';
 
 var minimum = new Date();
-var today = new Date();
+//var today = new Date();
 var startDate
-var forplot = [];
 var mostRecentElevenTicketsArray = [];
 var createdDate = 'Created';
 const leadTimeMaxValue = 15;
@@ -84,7 +83,7 @@ function isValidDate(date) {
     return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
 }
 
-function createDateArray(array) {
+function createDateArray(array, today) {
     var graphXAxisNum = Math.floor(today.getTime() - minimum.getTime()) / 86400000;
     var xaxis = [];
     for (var j = 0; j < graphXAxisNum; j++) {
@@ -96,7 +95,7 @@ function createDateArray(array) {
         }
         xaxis[j] = day;
     }
-    forplot = xaxis;
+    return xaxis;
 }
 
 function addDays(date, days) {
@@ -200,10 +199,10 @@ function lastElevenTickets(array, today) {
 }
 
 
-function workInParrallel(array) {
+function workInParrallel(array, today) {
     let dateRange = [];
     const lastDay = {
-        date: new Date(today),
+        date: today,
         in_progress: false,
         merged: false,
         last_day: true
@@ -328,33 +327,27 @@ function randNumFromDistribution(rangeObject, distributionType) {
     return temparray;
 }
 
-function monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded) {
+function monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded, today) {
     let workLeft = dates[dates.length - 1].Backlog - dates[dates.length - 1].Work_Done;
-    let adjustedWorkLeft = workLeft / workInParrallel(mostRecentElevenTicketsArray);
+    let adjustedWorkLeft = workLeft / workInParrallel(mostRecentElevenTicketsArray, today);
     let sum = randomNumsLeadTime[Math.floor(Math.random() * randomNumsLeadTime.length)] * adjustedWorkLeft;
     if (sum < 0) sum = 0;
-    // if (sum >= adjustedWorkLeft) {
-    //     return sum
-    // } else {
-    // while (sum <= adjustedWorkLeft) {
-    //      sum += randomNumsLeadTime[Math.floor(Math.random() * randomNumsLeadTime.length)];
-    // }
+    
     return sum //* (1 + randomNumsWorkAdded[Math.floor(Math.random() * randomNumsWorkAdded.length)]);
-    //} 
 }
 
-function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
+function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded, historicalData, today) {
     let runArray = [];
     for (let i = 0; i < n; i++) {
-        runArray.push(monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded));
+        runArray.push(monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded, today));
     }
     let monteCarloResults = {
         daysToCompletionArray: runArray,
         finalDistributionValuies: computeMeanSdAndItervalRangeMinMax(runArray),
-        workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray),
+        workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray, today),
         randomWorkAdded: computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded),
         confidence: getConfidence(runArray),
-        bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(forplot, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded), getConfidence(runArray))
+        bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(dates, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded), getConfidence(runArray))
 
     };
     console.log(monteCarloResults);
@@ -446,28 +439,50 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
 }
 
 
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+function test(startDate, today, formattedData, distType, ) {
+    let randomArr = randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType);
+    runMonteCarlo(10000, createDateArray(formattedData, today), randomArr, createDateArray(formattedData, today).map(o => o.Work_Added))
+}
+
+
 function Chart(props) {
     console.log(props);
-    today = new Date(props.data.today);
+    let today = new Date(props.data.today);
     const distType = props.data.isChecked;
     startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
+    
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
+    if (!props.data.isTest) {
     //set mostRecentElevenTicketsArray
     lastElevenTickets(formattedData, today);
-    workInParrallel(mostRecentElevenTicketsArray);
+    workInParrallel(mostRecentElevenTicketsArray, today);
     //set minimum
     findEarliestAndLatestDate(formattedData);
     //set forplot
-    createDateArray(formattedData);
+    let forplot = createDateArray(formattedData, today);
     console.log(forplot);
     const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
     const randLastElevenData = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(lastElevenData), distType);
     const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(mostRecentElevenTicketsArray.map(o => o['Lead Time']));
     const workAdded = computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added));
     const randWorkadded = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(workAdded));
-    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added));
+    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added), forplot, today);
 
-    if (!props.data.isTest) {
+    
         return (
 
             <div className="center">
@@ -645,20 +660,15 @@ function Chart(props) {
         );
     } else {
         return (
-            <div className="dataBox">
-                        <h1>Monte Carlo Data</h1>
-                        <h3>Confidence Values</h3>
-                        <p>50%: {myBoyMonte.confidence[0].value} days</p>
-                        <p>75%: {myBoyMonte.confidence[1].value} days</p>
-                        <p>90%: {myBoyMonte.confidence[2].value} days</p>
-                        <p>95%: {myBoyMonte.confidence[3].value} days</p>
-                        <h3>Model Values</h3>
-                        <p>Mean: {Math.round(myBoyMonte.finalDistributionValuies.mean * 100) / 100}</p>
-                        <p>Median: {Math.round(myBoyMonte.finalDistributionValuies.median * 100) / 100}</p>
-                        <p>Std Dev: {Math.round(myBoyMonte.finalDistributionValuies.sd * 100) / 100}</p>
-                        <p>Mode: {myBoyMonte.finalDistributionValuies.mode}</p>
-                        <p>Work in parallel value: {Math.round(myBoyMonte.workInParrallelValue * 100) / 100}</p>
-                    </div>
+            <div>
+                <tbody>
+                <tr>
+                <td>{props.data.projectName}</td>
+                    <td>{formatDate(Date(props.data.completionDate))}</td>
+                    <td>50</td>
+                </tr>
+                </tbody>
+            </div>
         )
     }
 }

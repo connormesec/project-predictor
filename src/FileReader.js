@@ -133,7 +133,7 @@ class FileReader extends React.Component {
           <button
             className="button"
             onClick={() => {
-              exportToJson(this.state);
+              exportToJson(this.state, "export");
             }}
           >
             Download JSON
@@ -169,11 +169,11 @@ function DatePickerStartDate() {
   );
 }
 
-function exportToJson(exportObj) {
+function exportToJson(exportObj, name) {
   var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
   var downloadAnchorNode = document.createElement('a');
   downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "export" + ".json");
+  downloadAnchorNode.setAttribute("download", name + ".json");
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
@@ -182,15 +182,15 @@ function exportToJson(exportObj) {
 
 function test() {
   let jsonFileArray = [IAM,IAM,IAM]
+  let elements = [];
   for (let i = 0; i<jsonFileArray.length ; i++) {
-    return (
-        // Without the `key`, React will fire a key warning
-        <React.Fragment>
-          <Chart data = {jsonFileArray[i]} />
-        </React.Fragment>
-    )
+    elements.push(<Chart data={jsonFileArray[i]} />)
   }
-  
+  return (
+    <div>
+      {elements}
+    </div>
+  )
 
 
 }
