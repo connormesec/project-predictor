@@ -15,6 +15,9 @@ class FileReader extends React.Component {
       today: today,
       startDate: dpStartDate,
       isChecked: false,
+      //for the test
+      isTest: false,
+      completionDate: new Date('12/2/2020')
     };
     this.updateData = this.updateData.bind(this);
   }
@@ -74,56 +77,66 @@ class FileReader extends React.Component {
           <div><DatePickerStartDate /></div>
           <p />
           <input
-              type="checkbox"
-              value="skewNormal"
-              checked={isChecked}
-              onChange={this.toggleCheckboxChange}
-            /> Use Skew-Normal
+            type="checkbox"
+            value="skewNormal"
+            checked={isChecked}
+            onChange={this.toggleCheckboxChange}
+          /> Use Skew-Normal
           <p />
           <button onClick={this.importCSV}>RUN!</button>
+          <p />
+          <button
+            className="button"
+            onClick={() => {
+              runTest();
+            }}
+          >
+            Run Test
+          </button>
         </div>
       );
     } else {
       return (
         <div>
           <div className="importHeader">
-          <h2>Import CSV File!</h2>
-          <input
-            className="csv-input"
-            type="file"
-            ref={input => {
-              this.filesInput = input;
-            }}
-            name="file"
-            placeholder={null}
-            onChange={this.handleChange}
-          />
-          <p />
-          <div><DatePickerToday /></div>
-          <p />
-          <div><DatePickerStartDate /></div>
-          <p />
-          <input
+            <h2>Import CSV File!</h2>
+            <input
+              className="csv-input"
+              type="file"
+              ref={input => {
+                this.filesInput = input;
+              }}
+              name="file"
+              placeholder={null}
+              onChange={this.handleChange}
+            />
+            <p />
+            <div><DatePickerToday /></div>
+            <p />
+            <div><DatePickerStartDate /></div>
+            <p />
+            <input
               type="checkbox"
               value="skewNormal"
               checked={isChecked}
               onChange={this.toggleCheckboxChange}
             /> Use Skew-Normal
           <p />
-          <button onClick={this.importCSV}>RUN!</button>
+            <button onClick={this.importCSV}>RUN!</button>
           </div>
           <button
-            href={`data:text/json;charset=utf-8,${encodeURIComponent(
-              JSON.stringify(this.state)
-            )}`}
-            download="filename.json"
+            className="button"
+            onClick={() => {
+              exportToJson(this.state);
+            }}
           >
-            {`Download Json`}
+            Download JSON
           </button>
-        <div>
-          <Chart data={this.state} />
-        </div>
-        
+          <p />
+          <div>
+            <Chart data={this.state} />
+          </div>
+
         </div>
       )
     }
@@ -132,22 +145,42 @@ class FileReader extends React.Component {
 }
 
 
-function DatePickerToday(){
+function DatePickerToday() {
   const [startDate, setStartDate] = useState(new Date());
   today = startDate;
   console.log(today);
   return (
-    <DatePicker selected={startDate} onChange={date => setStartDate(date)} placeholderText="Today"/>
+    <DatePicker selected={startDate} onChange={date => setStartDate(date)} placeholderText="Today" />
   );
 }
 
-function DatePickerStartDate(){
+function DatePickerStartDate() {
   const [startDate, setStartDate] = useState(undefined);
   dpStartDate = startDate;
   console.log(dpStartDate);
   return (
-    <DatePicker selected={dpStartDate} onChange={date => setStartDate(date)} placeholderText="Start Date (can be blank)"/>
+    <DatePicker selected={dpStartDate} onChange={date => setStartDate(date)} placeholderText="Start Date (can be blank)" />
   );
 }
+
+function exportToJson(exportObj) {
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "export" + ".json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
+function runTest() {
+
+
+
+
+
+}
+
+
 
 export default FileReader;
