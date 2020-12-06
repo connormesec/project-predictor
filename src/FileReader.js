@@ -3,6 +3,7 @@ import Papa from 'papaparse';
 import Chart from './Chart';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import IAM from './TestData/IAM.json';
 
 var today = new Date();
 var dpStartDate = undefined;
@@ -17,9 +18,11 @@ class FileReader extends React.Component {
       isChecked: false,
       //for the test
       isTest: false,
-      completionDate: new Date('12/2/2020')
+      completionDate: new Date('12/2/2020'),
+      showComponent: false,
     };
     this.updateData = this.updateData.bind(this);
+    this._onButtonClick = this._onButtonClick.bind(this);
   }
 
   handleChange = event => {
@@ -42,6 +45,12 @@ class FileReader extends React.Component {
       data: data,
       today: today,
       startDate: dpStartDate
+    });
+  }
+
+  _onButtonClick() {
+    this.setState({
+      showComponent: true,
     });
   }
 
@@ -85,14 +94,11 @@ class FileReader extends React.Component {
           <p />
           <button onClick={this.importCSV}>RUN!</button>
           <p />
-          <button
-            className="button"
-            onClick={() => {
-              runTest();
-            }}
-          >
-            Run Test
-          </button>
+          <div>
+          <button onClick={this._onButtonClick}>Run Test</button>
+          {this.state.showComponent ?
+           test() : null}
+      </div>
         </div>
       );
     } else {
@@ -173,10 +179,18 @@ function exportToJson(exportObj) {
   downloadAnchorNode.remove();
 }
 
-function runTest() {
 
-
-
+function test() {
+  let jsonFileArray = [IAM,IAM,IAM]
+  for (let i = 0; i<jsonFileArray.length ; i++) {
+    return (
+        // Without the `key`, React will fire a key warning
+        <React.Fragment>
+          <Chart data = {jsonFileArray[i]} />
+        </React.Fragment>
+    )
+  }
+  
 
 
 }

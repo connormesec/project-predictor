@@ -42,18 +42,18 @@
             "Summary": "Additional logging ",
             "Created": "2020-11-11T18:17:00.000Z",
             "In Progress": "2020-11-13T17:09:00.000Z",
-            "Merged": null,
-            "Closed": null,
-            "Lead Time": null
+            "Merged": "-",
+            "Closed": "-",
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-981",
             "Summary": "[identity-services] Implement getAllRolesInOrgContexts endpoint",
             "Created": "2020-11-10T19:31:00.000Z",
             "In Progress": "2020-11-12T23:41:00.000Z",
-            "Merged": null,
+            "Merged": "-",
             "Closed": "2020-11-24T20:17:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-980",
@@ -87,9 +87,9 @@
             "Summary": "Fetch workspace roles when we request all groups",
             "Created": "2020-11-09T18:06:00.000Z",
             "In Progress": "2020-11-09T18:07:00.000Z",
-            "Merged": null,
+            "Merged": "-",
             "Closed": "2020-11-11T18:51:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-976",
@@ -158,55 +158,55 @@
             "Key": "IAM-718",
             "Summary": "AdminError to ScimException",
             "Created": "2020-09-25T00:58:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-25T16:36:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-717",
             "Summary": "LicensingError to ScimException",
             "Created": "2020-09-25T00:56:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-25T16:36:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-716",
             "Summary": "FWorkspaceError to ScimException ",
             "Created": "2020-09-25T00:56:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-25T16:36:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-715",
             "Summary": "Workspace to GroupResource factory",
             "Created": "2020-09-25T00:49:00.000Z",
             "In Progress": "2020-09-25T00:53:00.000Z",
-            "Merged": null,
+            "Merged": "-",
             "Closed": "2020-09-25T16:37:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-714",
             "Summary": "Role GroupResource factory",
             "Created": "2020-09-25T00:47:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-25T16:37:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-713",
             "Summary": "Group GroupResource factory",
             "Created": "2020-09-25T00:46:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-25T16:37:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-708",
@@ -248,10 +248,10 @@
             "Key": "IAM-580",
             "Summary": "Add External Ids To Workspace",
             "Created": "2020-08-25T23:30:00.000Z",
-            "In Progress": null,
-            "Merged": null,
-            "Closed": null,
-            "Lead Time": null
+            "In Progress": "-",
+            "Merged": "-",
+            "Closed": "-",
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-564",
@@ -284,10 +284,10 @@
             "Key": "IAM-560",
             "Summary": "POST role",
             "Created": "2020-08-21T15:53:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-16T16:28:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-559",
@@ -302,10 +302,10 @@
             "Key": "IAM-558",
             "Summary": "POST workspace",
             "Created": "2020-08-21T15:51:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-16T16:28:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-557",
@@ -338,10 +338,10 @@
             "Key": "IAM-554",
             "Summary": "GET roles",
             "Created": "2020-08-21T15:44:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-17T18:07:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-553",
@@ -356,10 +356,10 @@
             "Key": "IAM-552",
             "Summary": "GET workspaces",
             "Created": "2020-08-21T15:42:00.000Z",
-            "In Progress": null,
-            "Merged": null,
+            "In Progress": "-",
+            "Merged": "-",
             "Closed": "2020-09-17T18:08:00.000Z",
-            "Lead Time": null
+            "Lead Time": "-"
         },
         {
             "Key": "IAM-551",
@@ -383,5 +383,6 @@
     "today": "2020-11-25T06:00:00.000Z",
     "isChecked": false,
     "isTest": true,
-    "completionDate": "2020-12-02T06:00:00.000Z"
+    "completionDate": "2020-12-02T06:00:00.000Z",
+    "startDate": null
 }

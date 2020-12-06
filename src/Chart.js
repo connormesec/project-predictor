@@ -4,7 +4,7 @@ import skewnorm from 'skew-normal-random';
 
 var minimum = new Date();
 var today = new Date();
-var startDate = new Date();
+var startDate
 var forplot = [];
 var mostRecentElevenTicketsArray = [];
 var createdDate = 'Created';
@@ -74,7 +74,7 @@ function findEarliestAndLatestDate(dateArray) {
         if (isValidDate(dateArray[i]['In Progress']) && isValidDate(dateArray[minIdx]['In Progress']) == false) minIdx = i;
     }
     if (!startDate) {
-     minimum = new Date(dateArray[minIdx]['In Progress']);
+        minimum = new Date(dateArray[minIdx]['In Progress']);
     } else {
         minimum = startDate;
     }
@@ -181,6 +181,7 @@ function median(numbers) {
 }
 
 //get the last ll tickets worked to completion
+//TODO: Make it so last 11 tickets respect start date
 function lastElevenTickets(array, today) {
     var temp = array.slice().sort((a, b) => b['Merged'] - a['Merged']);
 
@@ -278,7 +279,7 @@ function randNumFromDistribution(rangeObject, distributionType) {
         //Pearson's first skewness coefficient (mode skewness)
         const α = (rangeObject.mean - rangeObject.mode) / ω;
         const 𝛿 = α / Math.sqrt(1 + α * α);
-        const ξ = rangeObject.mean - ω * 𝛿 * Math.sqrt(2/Math.PI);
+        const ξ = rangeObject.mean - ω * 𝛿 * Math.sqrt(2 / Math.PI);
         const med = rangeObject.median;
 
         function randomNormal(ξ, ω, median) {
@@ -309,15 +310,15 @@ function randNumFromDistribution(rangeObject, distributionType) {
         }
 
 
-        if(distributionType){
-            return randomSkewNormal(α,ξ,ω);
+        if (distributionType) {
+            return randomSkewNormal(α, ξ, ω);
         } else {
             return randomNormal(mean, ω, med)
         }
-        
+
     }
-    
-    
+
+
     // Create n samples between min and max
     for (let i = 0; i < n; i++) {
         let rand_num = randn_bm();
@@ -339,7 +340,7 @@ function monteCarlo(dates, randomNumsLeadTime, randomNumsWorkAdded) {
     //      sum += randomNumsLeadTime[Math.floor(Math.random() * randomNumsLeadTime.length)];
     // }
     return sum //* (1 + randomNumsWorkAdded[Math.floor(Math.random() * randomNumsWorkAdded.length)]);
- //} 
+    //} 
 }
 
 function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
@@ -354,7 +355,7 @@ function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
         randomWorkAdded: computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded),
         confidence: getConfidence(runArray),
         bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(forplot, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded), getConfidence(runArray))
-        
+
     };
     console.log(monteCarloResults);
     return monteCarloResults;
@@ -422,7 +423,7 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
     let resultArray = [];
     for (let i = 0; i < worstCaseDays; i++) {
         const date = new Date((i + lastDay) * 86400000), bckLgInc = averageWorkAdded * i + lastDayBacklogTotal, doneWC = (i * (((averageWorkAdded * worstCaseDays) + lastDayBacklogTotal) - lastDayDoneTotal) / worstCaseDays) + lastDayDoneTotal, doneBC = (i * (((averageWorkAdded * bestCaseDays) + lastDayBacklogTotal) - lastDayDoneTotal) / bestCaseDays) + lastDayDoneTotal;
-        if(doneBC > lastDayBacklogTotal) {
+        if (doneBC > lastDayBacklogTotal) {
             resultArray.push(
                 {
                     day: date,
@@ -431,15 +432,15 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
                 }
             );
         } else {
-        resultArray.push(
-            {
-                day: date,
-                backlogIncrease: bckLgInc,
-                doneWorstCase: doneWC,
-                doneBestCase: doneBC
-            }
-        )
-        }   
+            resultArray.push(
+                {
+                    day: date,
+                    backlogIncrease: bckLgInc,
+                    doneWorstCase: doneWC,
+                    doneBestCase: doneBC
+                }
+            )
+        }
     }
     return resultArray;
 }
@@ -447,9 +448,9 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
 
 function Chart(props) {
     console.log(props);
-    today = props.data.today;
-    const distType = props.data.isChecked; 
-    startDate = props.data.startDate;
+    today = new Date(props.data.today);
+    const distType = props.data.isChecked;
+    startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
     //set mostRecentElevenTicketsArray
     lastElevenTickets(formattedData, today);
@@ -458,189 +459,207 @@ function Chart(props) {
     findEarliestAndLatestDate(formattedData);
     //set forplot
     createDateArray(formattedData);
-
-    const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])); 
+    console.log(forplot);
+    const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
     const randLastElevenData = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(lastElevenData), distType);
     const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(mostRecentElevenTicketsArray.map(o => o['Lead Time']));
     const workAdded = computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added));
     const randWorkadded = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(workAdded));
     let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added));
 
-    if (!myBoyMonte) return <div> Loading... </div>;
-    return (
+    if (!props.data.isTest) {
+        return (
 
-        <div className="center">
-            <div className="container">
-                <Plot
-                    data={[
-                        //backlog
-                        {
-                            x: forplot.map(o => o.Day),
-                            y: forplot.map(o => o.Backlog),
-                            type: 'scatter',
-                            mode: 'lines',
-                            marker: { color: 'orange' },
-                        },
-                        //work done
-                        {
-                            x: forplot.map(o => o.Day),
-                            y: forplot.map(o => o.Work_Done),
-                            type: 'scatter',
-                            mode: 'lines',
-                            marker: { color: 'blue' },
-                        },
-                        {
-                            x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
-                            y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.backlogIncrease),
-                            type: 'scatter',
-                            mode: 'lines',
-                            marker: { color: 'pink' },
-                        },
-                        {
-                            x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
-                            y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneWorstCase),
-                            type: 'scatter',
-                            mode: 'lines',
-                            marker: { color: 'red' },
-                        },
-                        {
-                            x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
-                            y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneBestCase),
-                            type: 'scatter',
-                            mode: 'lines',
-                            marker: { color: 'green' },
-                        },
-                    ]}
-                    layout={{ width: 1000, height: 500, title: 'CFD' }}
-                />
-            </div>
-            <div className="container">
-                <div className="dataBox">
-                    <h1>Monte Carlo Data</h1>
-                    <h3>Confidence Values</h3>
-                    <p>50%: {myBoyMonte.confidence[0].value} days</p>
-                    <p>75%: {myBoyMonte.confidence[1].value} days</p>
-                    <p>90%: {myBoyMonte.confidence[2].value} days</p>
-                    <p>95%: {myBoyMonte.confidence[3].value} days</p>
-                    <h3>Model Values</h3>
-                    <p>Mean: {Math.round(myBoyMonte.finalDistributionValuies.mean * 100)/100}</p>
-                    <p>Median: {Math.round(myBoyMonte.finalDistributionValuies.median * 100)/100}</p>
-                    <p>Std Dev: {Math.round(myBoyMonte.finalDistributionValuies.sd * 100)/100}</p>
-                    <p>Mode: {myBoyMonte.finalDistributionValuies.mode}</p>
-                    <p>Work in parallel value: {Math.round(myBoyMonte.workInParrallelValue * 100)/100}</p>
-                </div>
-                <div>
-                <Plot
-                    data={[
-                        //monteCarlo
-                        {
-                            x: myBoyMonte.daysToCompletionArray,
-                            type: 'histogram',
-                            histnorm: 'probability',
-                            marker: {
-                                color: 'rgb(255,100,100)',
-                            },
-                        },
-                    ]}
-                    layout={{ width: 1000, height: 500, title: 'Monte Carlo', xaxis: { range: [0, Math.max(myBoyMonte.daysToCompletionArray)] } }}
-                />
-                </div>
-            </div>
-            <div className="container">
-            <div className="dataBox">
-                    <h1>Lead Time</h1>
-                    <h3>Historical Values</h3>
-                <p>{mostRecentElevenTicketsArray.map(o => o['Lead Time']).map((o) => <>{o},</>)}</p>
-                    <p>Mean: {Math.round(historicalLastElevenTickets.mean * 100)/100}</p>
-                    <p>Median: {Math.round(historicalLastElevenTickets.median * 100)/100}</p>
-                    <p>Std Dev: {Math.round(historicalLastElevenTickets.sd * 100)/100}</p>
-                    <h3>Random Values</h3>
-                    <p>Mean: {Math.round(randLastElevenData.mean * 100)/100}</p>
-                    <p>Median: {Math.round(randLastElevenData.median * 100)/100}</p>
-                    <p>Std Dev: {Math.round(randLastElevenData.sd * 100)/100}</p>
-                    <p>Mode: {randLastElevenData.mode}</p>
-                </div>
-                <div className="plot">
+            <div className="center">
+                <div className="container">
                     <Plot
                         data={[
                             //backlog
                             {
-                                x: mostRecentElevenTicketsArray.map(o => o['Lead Time']),
-                                type: 'histogram',
-                                histnorm: 'probability',
-                                marker: {
-                                    color: 'rgb(255,255,100)',
-                                },
+                                x: forplot.map(o => o.Day),
+                                y: forplot.map(o => o.Backlog),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'orange' },
+                            },
+                            //work done
+                            {
+                                x: forplot.map(o => o.Day),
+                                y: forplot.map(o => o.Work_Done),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'blue' },
+                            },
+                            {
+                                x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
+                                y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.backlogIncrease),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'pink' },
+                            },
+                            {
+                                x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
+                                y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneWorstCase),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'red' },
+                            },
+                            {
+                                x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
+                                y: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneBestCase),
+                                type: 'scatter',
+                                mode: 'lines',
+                                marker: { color: 'green' },
                             },
                         ]}
-                        layout={{ width: 500, height: 500, title: 'Lead Time Frequency Diagram' }}
+                        layout={{ width: 1000, height: 500, title: 'CFD' }}
                     />
                 </div>
-                <div className="plot">
-                    <Plot
-                        data={[
-                            //backlog
-                            {
-                                x: randNumFromDistribution(lastElevenData, distType),
-                                type: 'histogram',
-                                histnorm: 'probability',
-                                marker: {
-                                    color: 'rgb(255,255,100)',
+                <div className="container">
+                    <div className="dataBox">
+                        <h1>Monte Carlo Data</h1>
+                        <h3>Confidence Values</h3>
+                        <p>50%: {myBoyMonte.confidence[0].value} days</p>
+                        <p>75%: {myBoyMonte.confidence[1].value} days</p>
+                        <p>90%: {myBoyMonte.confidence[2].value} days</p>
+                        <p>95%: {myBoyMonte.confidence[3].value} days</p>
+                        <h3>Model Values</h3>
+                        <p>Mean: {Math.round(myBoyMonte.finalDistributionValuies.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(myBoyMonte.finalDistributionValuies.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(myBoyMonte.finalDistributionValuies.sd * 100) / 100}</p>
+                        <p>Mode: {myBoyMonte.finalDistributionValuies.mode}</p>
+                        <p>Work in parallel value: {Math.round(myBoyMonte.workInParrallelValue * 100) / 100}</p>
+                    </div>
+                    <div>
+                        <Plot
+                            data={[
+                                //monteCarlo
+                                {
+                                    x: myBoyMonte.daysToCompletionArray,
+                                    type: 'histogram',
+                                    histnorm: 'probability',
+                                    marker: {
+                                        color: 'rgb(255,100,100)',
+                                    },
                                 },
-                            },
-                        ]}
-                        layout={{ width: 500, height: 500, title: 'Lead Time Random Numbers' }}
-                    />
+                            ]}
+                            layout={{ width: 1000, height: 500, title: 'Monte Carlo', xaxis: { range: [0, Math.max(myBoyMonte.daysToCompletionArray)] } }}
+                        />
+                    </div>
+                </div>
+                <div className="container">
+                    <div className="dataBox">
+                        <h1>Lead Time</h1>
+                        <h3>Historical Values</h3>
+                        <p>{mostRecentElevenTicketsArray.map(o => o['Lead Time']).map((o) => <>{o},</>)}</p>
+                        <p>Mean: {Math.round(historicalLastElevenTickets.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(historicalLastElevenTickets.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(historicalLastElevenTickets.sd * 100) / 100}</p>
+                        <h3>Random Values</h3>
+                        <p>Mean: {Math.round(randLastElevenData.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(randLastElevenData.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(randLastElevenData.sd * 100) / 100}</p>
+                        <p>Mode: {randLastElevenData.mode}</p>
+                    </div>
+                    <div className="plot">
+                        <Plot
+                            data={[
+                                //backlog
+                                {
+                                    x: mostRecentElevenTicketsArray.map(o => o['Lead Time']),
+                                    type: 'histogram',
+                                    histnorm: 'probability',
+                                    marker: {
+                                        color: 'rgb(255,255,100)',
+                                    },
+                                },
+                            ]}
+                            layout={{ width: 500, height: 500, title: 'Lead Time Frequency Diagram' }}
+                        />
+                    </div>
+                    <div className="plot">
+                        <Plot
+                            data={[
+                                //backlog
+                                {
+                                    x: randNumFromDistribution(lastElevenData, distType),
+                                    type: 'histogram',
+                                    histnorm: 'probability',
+                                    marker: {
+                                        color: 'rgb(255,255,100)',
+                                    },
+                                },
+                            ]}
+                            layout={{ width: 500, height: 500, title: 'Lead Time Random Numbers' }}
+                        />
+                    </div>
+                </div>
+                <div className="container">
+                    <div className="dataBox">
+                        <h1>Work Added</h1>
+                        <h3>Historical Values</h3>
+                        <p>Mean: {Math.round(workAdded.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(workAdded.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(workAdded.sd * 100) / 100}</p>
+                        <h3>Random Values</h3>
+                        <p>Mean: {Math.round(randWorkadded.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(randWorkadded.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(randWorkadded.sd * 100) / 100}</p>
+                        <p>Mode: {randWorkadded.mode}</p>
+                    </div>
+                    <div className="plot">
+                        <Plot
+                            data={[
+                                //backlog
+                                {
+                                    x: forplot.map(o => o.Work_Added),
+                                    type: 'histogram',
+                                    histnorm: 'probability',
+                                    marker: {
+                                        color: 'rgb(255,255,100)',
+                                    },
+                                },
+                            ]}
+                            layout={{ width: 500, height: 500, title: 'Work Added Frequency Diagram' }}
+                        />
+                    </div>
+                    <div className="plot">
+                        <Plot
+                            data={[
+                                //backlog
+                                {
+                                    x: randNumFromDistribution(workAdded, distType),
+                                    type: 'histogram',
+                                    histnorm: 'probability',
+                                    marker: {
+                                        color: 'rgb(255,255,100)',
+                                    },
+                                },
+                            ]}
+                            layout={{ width: 500, height: 500, title: 'Work Added Random Numbers' }}
+                        />
+                    </div>
                 </div>
             </div>
-            <div className="container">
-            <div className="dataBox">
-                    <h1>Work Added</h1>
-                    <h3>Historical Values</h3>
-                    <p>Mean: {Math.round(workAdded.mean * 100)/100}</p>
-                    <p>Median: {Math.round(workAdded.median * 100)/100}</p>
-                    <p>Std Dev: {Math.round(workAdded.sd * 100)/100}</p>
-                    <h3>Random Values</h3>
-                    <p>Mean: {Math.round(randWorkadded.mean * 100)/100}</p>
-                    <p>Median: {Math.round(randWorkadded.median * 100)/100}</p>
-                    <p>Std Dev: {Math.round(randWorkadded.sd * 100)/100}</p>
-                    <p>Mode: {randWorkadded.mode}</p>
-                </div>
-                <div className="plot">
-                    <Plot
-                        data={[
-                            //backlog
-                            {
-                                x: forplot.map(o => o.Work_Added),
-                                type: 'histogram',
-                                histnorm: 'probability',
-                                marker: {
-                                    color: 'rgb(255,255,100)',
-                                },
-                            },
-                        ]}
-                        layout={{ width: 500, height: 500, title: 'Work Added Frequency Diagram' }}
-                    />
-                </div>
-                <div className="plot">
-                    <Plot
-                        data={[
-                            //backlog
-                            {
-                                x: randNumFromDistribution(workAdded, distType),
-                                type: 'histogram',
-                                histnorm: 'probability',
-                                marker: {
-                                    color: 'rgb(255,255,100)',
-                                },
-                            },
-                        ]}
-                        layout={{ width: 500, height: 500, title: 'Work Added Random Numbers' }}
-                    />
-                </div>
-            </div>
-        </div>
 
-    );
+        );
+    } else {
+        return (
+            <div className="dataBox">
+                        <h1>Monte Carlo Data</h1>
+                        <h3>Confidence Values</h3>
+                        <p>50%: {myBoyMonte.confidence[0].value} days</p>
+                        <p>75%: {myBoyMonte.confidence[1].value} days</p>
+                        <p>90%: {myBoyMonte.confidence[2].value} days</p>
+                        <p>95%: {myBoyMonte.confidence[3].value} days</p>
+                        <h3>Model Values</h3>
+                        <p>Mean: {Math.round(myBoyMonte.finalDistributionValuies.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(myBoyMonte.finalDistributionValuies.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(myBoyMonte.finalDistributionValuies.sd * 100) / 100}</p>
+                        <p>Mode: {myBoyMonte.finalDistributionValuies.mode}</p>
+                        <p>Work in parallel value: {Math.round(myBoyMonte.workInParrallelValue * 100) / 100}</p>
+                    </div>
+        )
+    }
 }
 export default Chart;
