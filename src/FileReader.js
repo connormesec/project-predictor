@@ -13,7 +13,8 @@ class FileReader extends React.Component {
       csvfile: undefined,
       data: undefined,
       today: today,
-      startDate: dpStartDate
+      startDate: dpStartDate,
+      isChecked: false,
     };
     this.updateData = this.updateData.bind(this);
   }
@@ -41,7 +42,16 @@ class FileReader extends React.Component {
     });
   }
 
+  toggleCheckboxChange = () => {
+    this.setState(({ isChecked }) => (
+      {
+        isChecked: !isChecked,
+      }
+    ));
+  }
+
   render() {
+    const { isChecked } = this.state;
     console.log(this.state.csvfile);
     console.log(this.state);
     if (!this.state.data) {
@@ -62,6 +72,13 @@ class FileReader extends React.Component {
           <div><DatePickerToday /></div>
           <p />
           <div><DatePickerStartDate /></div>
+          <p />
+          <input
+              type="checkbox"
+              value="skewNormal"
+              checked={isChecked}
+              onChange={this.toggleCheckboxChange}
+            /> Use Skew-Normal
           <p />
           <button onClick={this.importCSV}>RUN!</button>
         </div>
@@ -86,11 +103,27 @@ class FileReader extends React.Component {
           <p />
           <div><DatePickerStartDate /></div>
           <p />
+          <input
+              type="checkbox"
+              value="skewNormal"
+              checked={isChecked}
+              onChange={this.toggleCheckboxChange}
+            /> Use Skew-Normal
+          <p />
           <button onClick={this.importCSV}>RUN!</button>
           </div>
+          <button
+            href={`data:text/json;charset=utf-8,${encodeURIComponent(
+              JSON.stringify(this.state)
+            )}`}
+            download="filename.json"
+          >
+            {`Download Json`}
+          </button>
         <div>
           <Chart data={this.state} />
         </div>
+        
         </div>
       )
     }
@@ -116,4 +149,5 @@ function DatePickerStartDate(){
     <DatePicker selected={dpStartDate} onChange={date => setStartDate(date)} placeholderText="Start Date (can be blank)"/>
   );
 }
+
 export default FileReader;

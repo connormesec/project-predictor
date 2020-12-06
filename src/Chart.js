@@ -1,6 +1,6 @@
 import React from 'react';
 import Plot from 'react-plotly.js';
-
+import skewnorm from 'skew-normal-random';
 
 var minimum = new Date();
 var today = new Date();
@@ -8,7 +8,7 @@ var startDate = new Date();
 var forplot = [];
 var mostRecentElevenTicketsArray = [];
 var createdDate = 'Created';
-const leadTimeMaxValue = 10;
+const leadTimeMaxValue = 15;
 
 function dateChange(data) {
     let data3 = data.map(datastring => {
@@ -138,10 +138,15 @@ function mode(numbers) {
     // as result can be bimodal or multi-modal,
     // the returned result is provided as an array
     // mode of [3, 5, 4, 4, 1, 1, 2, 3] = [1, 3, 4]
-    var modes = [], count = [], i, number, maxIndex = 0;
+    var modes = [], count = [], i, number, maxIndex = 0, result = [];
+    for (let i = 0; i < numbers.length; i++) {
+        let rand_num = numbers[i];
+        let rounded = round_to_precision(rand_num, 1)
+        result.push(rounded);
+    }
 
-    for (i = 0; i < numbers.length; i += 1) {
-        number = numbers[i];
+    for (i = 0; i < result.length; i += 1) {
+        number = result[i];
         count[number] = (count[number] || 0) + 1;
         if (count[number] > maxIndex) {
             maxIndex = count[number];
@@ -161,7 +166,7 @@ function mode(numbers) {
 function median(numbers) {
     // median of [3, 5, 4, 4, 1, 1, 2, 3] = 3
     var median = 0, numsLen = numbers.length;
-    numbers.sort();
+    numbers.sort((a, b) => a - b);
 
     if (
         numsLen % 2 === 0 // is even
@@ -172,7 +177,6 @@ function median(numbers) {
         // middle number only
         median = numbers[(numsLen - 1) / 2];
     }
-
     return median;
 }
 
@@ -190,7 +194,6 @@ function lastElevenTickets(array, today) {
             l = l + 1;
         }
     }
-    console.log(testarr)
     mostRecentElevenTicketsArray = testarr
     return testarr;
 }
@@ -256,7 +259,7 @@ function workInParrallel(array) {
 }
 
 
-function leadTimeAnalysis(rangeObject) {
+function randNumFromDistribution(rangeObject, distributionType) {
 
     let n = 10000;
     let temparray = [];
@@ -270,9 +273,12 @@ function leadTimeAnalysis(rangeObject) {
         const Θ = 2.0 * Math.PI * v;
         const test = [R * Math.cos(Θ), R * Math.sin(Θ)];
 
-        const ξ = rangeObject.mean;
+        const mean = rangeObject.mean;
         const ω = rangeObject.sd;
-        const α = rangeObject.mean / 2 * (Math.pow(rangeObject.sd, 3));
+        //Pearson's first skewness coefficient (mode skewness)
+        const α = (rangeObject.mean - rangeObject.mode) / ω;
+        const 𝛿 = α / Math.sqrt(1 + α * α);
+        const ξ = rangeObject.mean - ω * 𝛿 * Math.sqrt(2/Math.PI);
         const med = rangeObject.median;
 
         function randomNormal(ξ, ω, median) {
@@ -282,22 +288,36 @@ function leadTimeAnalysis(rangeObject) {
             return num;
         }
 
-        function randomSkewNormal(test, ξ, ω, α) {
-            const [u0, v] = test;
-            if (α === 0) {
-                return ξ + ω * u0;
-            }
-            const 𝛿 = α / Math.sqrt(1 + α * α);
-            const u1 = 𝛿 * u0 + Math.sqrt(1 - 𝛿 * 𝛿) * v;
-            const z = u0 >= 0 ? u1 : -u1;
-            //originally was let num = ξ + ω * z;
-            let num = ξ + ω * z;
-            if (num < 0) num = randn_bm();
+        // function randomSkewNormal(test, ξ, ω, α = 7) {
+        //     const [u0, v] = test;
+        //     if (α === 0) {
+        //         return ξ + ω * u0;
+        //     }
+        //     const 𝛿 = α / Math.sqrt(1 + α * α);
+        //     const u1 = 𝛿 * u0 + Math.sqrt(1 - 𝛿 * 𝛿) * v;
+        //     //const z = u0 >= 0 ? u1 : -u1;
+        //     const z = u1;
+        //     //origin was ξ + ω * z
+        //     let num = ξ + ω * z;
+        //     //if (num < 0) num = randn_bm();
+        //     return num;
+        // }
+
+        function randomSkewNormal(alpha, location, scale) {
+            let num = skewnorm.rSkewNorm(alpha, location, scale);
             return num;
         }
-        return randomNormal(ξ, ω, med)
-        //return randomSkewNormal(test,ξ,ω,α);
+
+
+        if(distributionType){
+            return randomSkewNormal(α,ξ,ω);
+        } else {
+            return randomNormal(mean, ω, med)
+        }
+        
     }
+    
+    
     // Create n samples between min and max
     for (let i = 0; i < n; i++) {
         let rand_num = randn_bm();
@@ -332,8 +352,9 @@ function runMonteCarlo(n, dates, randomNumsLeadTime, randomNumsWorkAdded) {
         finalDistributionValuies: computeMeanSdAndItervalRangeMinMax(runArray),
         workInParrallelValue: workInParrallel(mostRecentElevenTicketsArray),
         randomWorkAdded: computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded),
-        bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(forplot, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded)),
-        confidence: getConfidence(runArray)
+        confidence: getConfidence(runArray),
+        bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(forplot, computeMeanSdAndItervalRangeMinMax(runArray), computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded), getConfidence(runArray))
+        
     };
     console.log(monteCarloResults);
     return monteCarloResults;
@@ -382,7 +403,7 @@ function getConfidence(rawDataArray) {
         sum = sum + hc_data[k].y * 100;
         for (let l = 0; l < confidence.length; l++) {
             if (sum < confidence[l].percent) {
-                confidence[l].value = hc_data[k].x;
+                confidence[l].value = hc_data[k].x + 1;
             }
         }
     }
@@ -390,25 +411,36 @@ function getConfidence(rawDataArray) {
     return confidence;
 }
 
-function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, randomWorkAdded) {
+function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, randomWorkAdded, confidence) {
+
     let lastDay = historicalData[historicalData.length - 1].Day.getTime() / 86400000;
     let lastDayBacklogTotal = historicalData[historicalData.length - 1].Backlog;
     let lastDayDoneTotal = historicalData[historicalData.length - 1].Work_Done;
-    let worstCaseDays = finalDistributionValuies.worst_case;
-    let bestCaseDays = finalDistributionValuies.best_case;
+    let worstCaseDays = confidence[3].value;
+    let bestCaseDays = confidence[0].value;
     let averageWorkAdded = randomWorkAdded.median;
     let resultArray = [];
     for (let i = 0; i < worstCaseDays; i++) {
+        const date = new Date((i + lastDay) * 86400000), bckLgInc = averageWorkAdded * i + lastDayBacklogTotal, doneWC = (i * (((averageWorkAdded * worstCaseDays) + lastDayBacklogTotal) - lastDayDoneTotal) / worstCaseDays) + lastDayDoneTotal, doneBC = (i * (((averageWorkAdded * bestCaseDays) + lastDayBacklogTotal) - lastDayDoneTotal) / bestCaseDays) + lastDayDoneTotal;
+        if(doneBC > lastDayBacklogTotal) {
+            resultArray.push(
+                {
+                    day: date,
+                    backlogIncrease: bckLgInc,
+                    doneWorstCase: doneWC
+                }
+            );
+        } else {
         resultArray.push(
             {
-                day: new Date((i + lastDay) * 86400000),
-                backlogIncrease: averageWorkAdded * i + lastDayBacklogTotal,
-                doneWorstCase: (i * (((averageWorkAdded * worstCaseDays) + lastDayBacklogTotal) - lastDayDoneTotal) / worstCaseDays) + lastDayDoneTotal,
-                doneBestCase: undefined
+                day: date,
+                backlogIncrease: bckLgInc,
+                doneWorstCase: doneWC,
+                doneBestCase: doneBC
             }
         )
+        }   
     }
-    console.log(resultArray);
     return resultArray;
 }
 
@@ -416,6 +448,7 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
 function Chart(props) {
     console.log(props);
     today = props.data.today;
+    const distType = props.data.isChecked; 
     startDate = props.data.startDate;
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
     //set mostRecentElevenTicketsArray
@@ -427,11 +460,11 @@ function Chart(props) {
     createDateArray(formattedData);
 
     const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])); 
-    const randLastElevenData = computeMeanSdAndItervalRangeMinMax(leadTimeAnalysis(lastElevenData));
+    const randLastElevenData = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(lastElevenData), distType);
     const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(mostRecentElevenTicketsArray.map(o => o['Lead Time']));
     const workAdded = computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added));
-    const randWorkadded = computeMeanSdAndItervalRangeMinMax(leadTimeAnalysis(workAdded));
-    let myBoyMonte = runMonteCarlo(10000, forplot, leadTimeAnalysis(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']))), forplot.map(o => o.Work_Added));
+    const randWorkadded = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(workAdded));
+    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added));
 
     if (!myBoyMonte) return <div> Loading... </div>;
     return (
@@ -446,7 +479,7 @@ function Chart(props) {
                             y: forplot.map(o => o.Backlog),
                             type: 'scatter',
                             mode: 'lines',
-                            marker: { color: 'red' },
+                            marker: { color: 'orange' },
                         },
                         //work done
                         {
@@ -454,7 +487,7 @@ function Chart(props) {
                             y: forplot.map(o => o.Work_Done),
                             type: 'scatter',
                             mode: 'lines',
-                            marker: { color: 'green' },
+                            marker: { color: 'blue' },
                         },
                         {
                             x: myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day),
@@ -493,6 +526,7 @@ function Chart(props) {
                     <p>Mean: {Math.round(myBoyMonte.finalDistributionValuies.mean * 100)/100}</p>
                     <p>Median: {Math.round(myBoyMonte.finalDistributionValuies.median * 100)/100}</p>
                     <p>Std Dev: {Math.round(myBoyMonte.finalDistributionValuies.sd * 100)/100}</p>
+                    <p>Mode: {myBoyMonte.finalDistributionValuies.mode}</p>
                     <p>Work in parallel value: {Math.round(myBoyMonte.workInParrallelValue * 100)/100}</p>
                 </div>
                 <div>
@@ -524,6 +558,7 @@ function Chart(props) {
                     <p>Mean: {Math.round(randLastElevenData.mean * 100)/100}</p>
                     <p>Median: {Math.round(randLastElevenData.median * 100)/100}</p>
                     <p>Std Dev: {Math.round(randLastElevenData.sd * 100)/100}</p>
+                    <p>Mode: {randLastElevenData.mode}</p>
                 </div>
                 <div className="plot">
                     <Plot
@@ -546,7 +581,7 @@ function Chart(props) {
                         data={[
                             //backlog
                             {
-                                x: leadTimeAnalysis(lastElevenData),
+                                x: randNumFromDistribution(lastElevenData, distType),
                                 type: 'histogram',
                                 histnorm: 'probability',
                                 marker: {
@@ -569,6 +604,7 @@ function Chart(props) {
                     <p>Mean: {Math.round(randWorkadded.mean * 100)/100}</p>
                     <p>Median: {Math.round(randWorkadded.median * 100)/100}</p>
                     <p>Std Dev: {Math.round(randWorkadded.sd * 100)/100}</p>
+                    <p>Mode: {randWorkadded.mode}</p>
                 </div>
                 <div className="plot">
                     <Plot
@@ -591,7 +627,7 @@ function Chart(props) {
                         data={[
                             //backlog
                             {
-                                x: leadTimeAnalysis(workAdded),
+                                x: randNumFromDistribution(workAdded, distType),
                                 type: 'histogram',
                                 histnorm: 'probability',
                                 marker: {

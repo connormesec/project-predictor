@@ -10,8 +10,4 @@ function App() {
   );
 }
 
-function Plots({data}) {
-  console.log(data);
-}
-
 export default App;
