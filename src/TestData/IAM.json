@@ -385,5 +385,7 @@
     "isTest": true,
     "completionDate": "2020-12-02T06:00:00.000Z",
     "startDate": null,
-    "projectName": "IAM"
+    "projectName": "IAM",
+    "dateAtThreeTickets": "2020-10-04T06:00:00.000Z",
+    "dateAtSixTickets": "2020-10-21T06:00:00.000Z"
 }

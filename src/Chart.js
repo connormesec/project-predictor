@@ -2,10 +2,6 @@ import React from 'react';
 import Plot from 'react-plotly.js';
 import skewnorm from 'skew-normal-random';
 
-//var minimum = new Date();
-//var today = new Date();
-//var startDate
-//var mostRecentElevenTicketsArray = [];
 var createdDate = 'Created';
 const leadTimeMaxValue = 15;
 
@@ -453,9 +449,10 @@ function formatDate(date) {
     return [year, month, day].join('-');
 }
 
-function test(startDate, today, formattedData, distType, ) {
+function test(startDate, today, formattedData, distType) {
+    console.log((lastElevenTickets(formattedData, today).map(o => o['Lead Time'])))
     let randomArr = randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType);
-    runMonteCarlo(10000, createDateArray(formattedData, today), randomArr, createDateArray(formattedData, today).map(o => o.Work_Added), today)
+    return runMonteCarlo(10000, createDateArray(formattedData, today, findEarliestDate(formattedData, startDate)), randomArr, createDateArray(formattedData, today, findEarliestDate(formattedData, startDate)).map(o => o.Work_Added), today, formattedData)
 }
 
 
@@ -464,10 +461,9 @@ function Chart(props) {
     let today = new Date(props.data.today);
     const distType = props.data.isChecked;
     let startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
-    
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
-    if (!props.data.isTest) {
 
+    if (!props.data.isTest) {
     let forplot = createDateArray(formattedData, today, findEarliestDate(formattedData, startDate));
     console.log(forplot);
     const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
@@ -654,13 +650,25 @@ function Chart(props) {
 
         );
     } else {
+        let threeTixDay = new Date(props.data.dateAtThreeTickets)
+        let sixTixDay = new Date(props.data.dateAtSixTickets)
+        const threeTix = test(startDate, threeTixDay, formattedData, distType)
+        console.log(threeTix)
+        const threeTixSkew = test(startDate, threeTixDay, formattedData, true)
+        //const sixTix = test(startDate, sixTixDay, formattedData, distType)
+        //const sixTixSkew = test(startDate, sixTixDay, formattedData, true)
+
+        
+
+
+
         return (
             <div>
                 <tbody>
                 <tr>
                 <td>{props.data.projectName}</td>
                     <td>{formatDate(Date(props.data.completionDate))}</td>
-                    <td>50</td>
+                    <td>{formatDate(threeTixDay)}</td>
                 </tr>
                 </tbody>
             </div>
