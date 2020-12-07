@@ -187,12 +187,15 @@ function test() {
     elements.push(<Chart data={jsonFileArray[i]} />)
   }
   return (
-    <div>
+    <table>
+      <tr>
+        <th>Project</th>
+        <th>Completion Date</th>
+        <th>After 3 Tickets</th>
+      </tr>
       {elements}
-    </div>
+    </table>
   )
-
-
 }
 
 

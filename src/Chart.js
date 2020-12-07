@@ -655,23 +655,21 @@ function Chart(props) {
         const threeTix = test(startDate, threeTixDay, formattedData, distType)
         console.log(threeTix)
         const threeTixSkew = test(startDate, threeTixDay, formattedData, true)
-        //const sixTix = test(startDate, sixTixDay, formattedData, distType)
-        //const sixTixSkew = test(startDate, sixTixDay, formattedData, true)
+        const sixTix = test(startDate, sixTixDay, formattedData, distType)
+        const sixTixSkew = test(startDate, sixTixDay, formattedData, true)
 
-        
-
+        const threeTix95conf = formatDate(addDays(threeTixDay, threeTix.confidence[3].value))
 
 
         return (
-            <div>
                 <tbody>
                 <tr>
-                <td>{props.data.projectName}</td>
+                    <td>{props.data.projectName}</td>
                     <td>{formatDate(Date(props.data.completionDate))}</td>
                     <td>{formatDate(threeTixDay)}</td>
+                    <td>{threeTix95conf}</td>
                 </tr>
                 </tbody>
-            </div>
         )
     }
 }
