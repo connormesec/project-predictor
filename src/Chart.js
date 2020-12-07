@@ -653,12 +653,20 @@ function Chart(props) {
         let threeTixDay = new Date(props.data.dateAtThreeTickets)
         let sixTixDay = new Date(props.data.dateAtSixTickets)
         const threeTix = test(startDate, threeTixDay, formattedData, distType)
-        console.log(threeTix)
         const threeTixSkew = test(startDate, threeTixDay, formattedData, true)
         const sixTix = test(startDate, sixTixDay, formattedData, distType)
         const sixTixSkew = test(startDate, sixTixDay, formattedData, true)
 
         const threeTix95conf = formatDate(addDays(threeTixDay, threeTix.confidence[3].value))
+        const threeTix95confSkew = formatDate(addDays(threeTixDay, threeTixSkew.confidence[3].value))
+
+        const green = {
+            background: "green"
+        }
+        const red = {
+            background: "red"
+        }
+        
 
 
         return (
@@ -667,7 +675,8 @@ function Chart(props) {
                     <td>{props.data.projectName}</td>
                     <td>{formatDate(Date(props.data.completionDate))}</td>
                     <td>{formatDate(threeTixDay)}</td>
-                    <td>{threeTix95conf}</td>
+                    <td style={}>{threeTix95conf}</td>
+                    <td>{threeTix95confSkew}</td>
                 </tr>
                 </tbody>
         )

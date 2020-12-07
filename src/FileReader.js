@@ -189,9 +189,16 @@ function test() {
   return (
     <table>
       <tr>
+        <th colspan="2"></th>
+        <th colspan="3">Three Tickets Done</th>
+        <th colspan="3">Six Tickets Done</th>
+      </tr>
+      <tr>
         <th>Project</th>
         <th>Completion Date</th>
-        <th>After 3 Tickets</th>
+        <th>Today</th>
+        <th>Normal</th>
+        <th>Skew</th>
       </tr>
       {elements}
     </table>
