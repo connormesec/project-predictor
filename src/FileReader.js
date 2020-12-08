@@ -4,7 +4,11 @@ import Chart from './Chart';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import IAM from './TestData/IAM.json';
-import CEREBRAL from './TestData/CEREBRAL.json'
+import CEREBRAL from './TestData/CEREBRAL.json';
+import Usability from './TestData/UsabilityStudyFeedbackTFX.json';
+import MarkAsCorrect from './TestData/MarkAsCorrect.json';
+import ResourceManagement from './TestData/ResourceMangement.json';
+import SSBlackline from './TestData/SpreadSheetsBlackline.json';
 
 var today = new Date();
 var dpStartDate = undefined;
@@ -182,7 +186,7 @@ function exportToJson(exportObj, name) {
 
 
 function test() {
-  let jsonFileArray = [IAM, CEREBRAL]
+  let jsonFileArray = [IAM, CEREBRAL, Usability, MarkAsCorrect, ResourceManagement, SSBlackline]
   let elements = [];
   for (let i = 0; i<jsonFileArray.length ; i++) {
     elements.push(<Chart data={jsonFileArray[i]} />)
