@@ -1,0 +1,121 @@
+{
+    "csvfile": {},
+    "data": [
+        {
+            "Key": "CEREBRAL-4503",
+            "Summary": "Allow empty array defaults on Query Parameters - DPC",
+            "Created": "2020-11-20T20:11:00.000Z",
+            "In Progress": "2020-11-30T16:54:00.000Z",
+            "Merged": "-",
+            "Closed": "2020-11-30T16:56:00.000Z",
+            "Lead Time": "-"
+        },
+        {
+            "Key": "CEREBRAL-4480",
+            "Summary": "Allow empty array defaults on Query Parameters - WUU",
+            "Created": "2020-11-17T21:05:00.000Z",
+            "In Progress": "2020-11-20T20:09:00.000Z",
+            "Merged": "2020-11-23T13:17:00.000Z",
+            "Closed": "2020-12-01T01:01:00.000Z",
+            "Lead Time": 2
+        },
+        {
+            "Key": "CEREBRAL-4387",
+            "Summary": "Allow no defaults on Query Create",
+            "Created": "2020-11-06T21:42:00.000Z",
+            "In Progress": "2020-11-17T21:04:00.000Z",
+            "Merged": "2020-11-30T17:05:00.000Z",
+            "Closed": "2020-12-01T00:51:00.000Z",
+            "Lead Time": 10
+        },
+        {
+            "Key": "CEREBRAL-4386",
+            "Summary": "Allow NULL default with MultiSelect",
+            "Created": "2020-11-06T21:35:00.000Z",
+            "In Progress": "2020-11-16T18:16:00.000Z",
+            "Merged": "2020-11-18T13:38:00.000Z",
+            "Closed": "2020-11-18T19:39:00.000Z",
+            "Lead Time": 3
+        },
+        {
+            "Key": "CEREBRAL-4330",
+            "Summary": "Enforce Defaults in Mini Home",
+            "Created": "2020-10-29T18:19:00.000Z",
+            "In Progress": "2020-11-13T19:32:00.000Z",
+            "Merged": "-",
+            "Closed": "2020-11-16T16:53:00.000Z",
+            "Lead Time": "-"
+        },
+        {
+            "Key": "CEREBRAL-4291",
+            "Summary": "Update multiselect parameter components Warning Icon",
+            "Created": "2020-10-22T20:06:00.000Z",
+            "In Progress": "2020-10-27T20:51:00.000Z",
+            "Merged": "2020-11-02T17:54:00.000Z",
+            "Closed": "2020-11-06T03:39:00.000Z",
+            "Lead Time": 5
+        },
+        {
+            "Key": "CEREBRAL-4290",
+            "Summary": "Update DPC to consume latest Wdata_ui_utils",
+            "Created": "2020-10-22T20:04:00.000Z",
+            "In Progress": "2020-10-22T20:04:00.000Z",
+            "Merged": "2020-10-27T20:08:00.000Z",
+            "Closed": "2020-10-30T01:34:00.000Z",
+            "Lead Time": 4
+        },
+        {
+            "Key": "CEREBRAL-4165",
+            "Summary": "Parameter multi-select UI tightening",
+            "Created": "2020-10-05T19:41:00.000Z",
+            "In Progress": "2020-11-11T21:21:00.000Z",
+            "Merged": "2020-11-13T13:34:00.000Z",
+            "Closed": "2020-11-18T02:39:00.000Z",
+            "Lead Time": 3
+        },
+        {
+            "Key": "CEREBRAL-4157",
+            "Summary": "Handle Multi-Select List overflow",
+            "Created": "2020-10-02T19:21:00.000Z",
+            "In Progress": "2020-11-09T13:38:00.000Z",
+            "Merged": "2020-11-13T13:40:00.000Z",
+            "Closed": "2020-11-18T02:39:00.000Z",
+            "Lead Time": 5
+        },
+        {
+            "Key": "CEREBRAL-4156",
+            "Summary": "Error Messaging for lists longer that 512",
+            "Created": "2020-10-02T18:24:00.000Z",
+            "In Progress": "2020-10-15T16:11:00.000Z",
+            "Merged": "2020-10-20T15:26:00.000Z",
+            "Closed": "2020-10-22T16:35:00.000Z",
+            "Lead Time": 4
+        },
+        {
+            "Key": "CEREBRAL-4153",
+            "Summary": "Enforce IN LIST Multiselect - Frontend",
+            "Created": "2020-10-02T17:49:00.000Z",
+            "In Progress": "2020-10-30T19:00:00.000Z",
+            "Merged": "2020-11-13T13:32:00.000Z",
+            "Closed": "2020-11-18T02:39:00.000Z",
+            "Lead Time": 6
+        },
+        {
+            "Key": "CEREBRAL-4151",
+            "Summary": "Requiring Default Values on the UI when creating a parameter.",
+            "Created": "2020-10-02T17:29:00.000Z",
+            "In Progress": "2020-10-19T20:03:00.000Z",
+            "Merged": "2020-10-26T15:42:00.000Z",
+            "Closed": "2020-10-30T17:40:00.000Z",
+            "Lead Time": 1
+        }
+    ],
+    "today": "2020-11-08T20:23:50.000Z",
+    "isChecked": false,
+    "isTest": true,
+    "completionDate": "2020-11-30T06:00:00.000Z",
+    "startDate": null,
+    "projectName": "CEREBRAL",
+    "dateAtThreeTickets": "2020-10-29T06:00:00.000Z",
+    "dateAtSixTickets": "2020-11-13T06:00:00.000Z"
+}

@@ -4,6 +4,7 @@ import Chart from './Chart';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import IAM from './TestData/IAM.json';
+import CEREBRAL from './TestData/CEREBRAL.json'
 
 var today = new Date();
 var dpStartDate = undefined;
@@ -181,7 +182,7 @@ function exportToJson(exportObj, name) {
 
 
 function test() {
-  let jsonFileArray = [IAM,IAM,IAM]
+  let jsonFileArray = [IAM, CEREBRAL]
   let elements = [];
   for (let i = 0; i<jsonFileArray.length ; i++) {
     elements.push(<Chart data={jsonFileArray[i]} />)
@@ -192,10 +193,29 @@ function test() {
         <th colspan="2"></th>
         <th colspan="3">Three Tickets Done</th>
         <th colspan="3">Six Tickets Done</th>
+        <th colspan="3">Eleven Tickets Done</th>
+        <th colspan="3">25% Done</th>
+        <th colspan="3">50% Done</th>
+        <th colspan="3">75% Done</th>
       </tr>
       <tr>
         <th>Project</th>
         <th>Completion Date</th>
+        <th>Today</th>
+        <th>Normal</th>
+        <th>Skew</th>
+        <th>Today</th>
+        <th>Normal</th>
+        <th>Skew</th>
+        <th>Today</th>
+        <th>Normal</th>
+        <th>Skew</th>
+        <th>Today</th>
+        <th>Normal</th>
+        <th>Skew</th>
+        <th>Today</th>
+        <th>Normal</th>
+        <th>Skew</th>
         <th>Today</th>
         <th>Normal</th>
         <th>Skew</th>
@@ -204,7 +224,5 @@ function test() {
     </table>
   )
 }
-
-
 
 export default FileReader;

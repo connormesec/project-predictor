@@ -436,6 +436,9 @@ function bestAndWorstCaseForPlot(historicalData, finalDistributionValuies, rando
 
 
 function formatDate(date) {
+    if (!isValidDate(date)){
+        return null
+    } else {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
@@ -447,10 +450,10 @@ function formatDate(date) {
         day = '0' + day;
 
     return [year, month, day].join('-');
+    }
 }
 
 function test(startDate, today, formattedData, distType) {
-    console.log((lastElevenTickets(formattedData, today).map(o => o['Lead Time'])))
     let randomArr = randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType);
     return runMonteCarlo(10000, createDateArray(formattedData, today, findEarliestDate(formattedData, startDate)), randomArr, createDateArray(formattedData, today, findEarliestDate(formattedData, startDate)).map(o => o.Work_Added), today, formattedData)
 }
@@ -462,10 +465,10 @@ function Chart(props) {
     const distType = props.data.isChecked;
     let startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
+    console.log(formattedData)
 
     if (!props.data.isTest) {
     let forplot = createDateArray(formattedData, today, findEarliestDate(formattedData, startDate));
-    console.log(forplot);
     const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
     const randLastElevenData = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(lastElevenData), distType);
     const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
@@ -650,33 +653,83 @@ function Chart(props) {
 
         );
     } else {
-        let threeTixDay = new Date(props.data.dateAtThreeTickets)
-        let sixTixDay = new Date(props.data.dateAtSixTickets)
-        const threeTix = test(startDate, threeTixDay, formattedData, distType)
-        const threeTixSkew = test(startDate, threeTixDay, formattedData, true)
-        const sixTix = test(startDate, sixTixDay, formattedData, distType)
-        const sixTixSkew = test(startDate, sixTixDay, formattedData, true)
+        const earliestDate = findEarliestDate(formattedData, startDate)
+        const twentyFivePercentDone = ((new Date(props.data.completionDate).getTime() - findEarliestDate(formattedData, startDate).getTime()) / 4)
+        let tableData = {
+            completionDate: new Date(props.data.completionDate),
+            threeTix: {
+                today: new Date(props.data.dateAtThreeTickets),
+                normal: addDays(new Date(props.data.dateAtThreeTickets), (isValidDate(new Date(props.data.dateAtThreeTickets))) ? test(startDate, new Date(props.data.dateAtThreeTickets), formattedData, false).confidence[3].value : null),
+                skew: addDays(new Date(props.data.dateAtThreeTickets), (isValidDate(new Date(props.data.dateAtThreeTickets))) ? test(startDate, new Date(props.data.dateAtThreeTickets), formattedData, true).confidence[3].value : null)
+            },
+            sixTix: {
+                today: new Date(props.data.dateAtSixTickets),
+                normal: addDays(new Date(props.data.dateAtSixTickets), (isValidDate(new Date(props.data.dateAtSixTickets))) ? test(startDate, new Date(props.data.dateAtSixTickets), formattedData, false).confidence[3].value : null),
+                skew: addDays(new Date(props.data.dateAtSixTickets), (isValidDate(new Date(props.data.dateAtSixTickets))) ? test(startDate, new Date(props.data.dateAtSixTickets), formattedData, true).confidence[3].value : null)
+            },
+            elevenTix: {
+                today: new Date(props.data.dateAtElevenTickets),
+                normal: addDays(new Date(props.data.dateAtElevenTickets), (isValidDate(new Date(props.data.dateAtElevenTickets))) ? test(startDate, new Date(props.data.dateAtElevenTickets), formattedData, false).confidence[3].value : null),
+                skew: addDays(new Date(props.data.dateAtElevenTickets), (isValidDate(new Date(props.data.dateAtElevenTickets))) ? test(startDate, new Date(props.data.dateAtElevenTickets), formattedData, true).confidence[3].value : null)
+            },
+            twentyFivePercent : {
+                today: new Date(twentyFivePercentDone + earliestDate.getTime()),
+                normal: addDays(new Date(twentyFivePercentDone + earliestDate.getTime()), (isValidDate(new Date(twentyFivePercentDone + earliestDate.getTime()))) ? test(startDate, new Date(twentyFivePercentDone + earliestDate.getTime()), formattedData, false).confidence[3].value : null),
+                skew: addDays(new Date(twentyFivePercentDone + earliestDate.getTime()), (isValidDate(new Date(twentyFivePercentDone + earliestDate.getTime()))) ? test(startDate, new Date(twentyFivePercentDone + earliestDate.getTime()), formattedData, true).confidence[3].value : null)
+            },
+            fiftyPercent : {
+                today: new Date(twentyFivePercentDone * 2 + earliestDate.getTime()),
+                normal: addDays(new Date(twentyFivePercentDone * 2 + earliestDate.getTime()), (isValidDate(new Date(twentyFivePercentDone * 2 + earliestDate.getTime()))) ? test(startDate, new Date(twentyFivePercentDone * 2 + earliestDate.getTime()), formattedData, false).confidence[3].value : null),
+                skew: addDays(new Date(twentyFivePercentDone * 2 + earliestDate.getTime()), (isValidDate(new Date(twentyFivePercentDone * 2 + earliestDate.getTime()))) ? test(startDate, new Date(twentyFivePercentDone * 2 + earliestDate.getTime()), formattedData, true).confidence[3].value : null)
+            },
+            seventyFivePercent : {
+                today: new Date(twentyFivePercentDone * 3 + earliestDate.getTime()),
+                normal: addDays(new Date(twentyFivePercentDone * 3 + earliestDate.getTime()), (isValidDate(new Date(twentyFivePercentDone * 3 + earliestDate.getTime()))) ? test(startDate, new Date(twentyFivePercentDone * 3 + earliestDate.getTime()), formattedData, false).confidence[3].value : null),
+                skew: addDays(new Date(twentyFivePercentDone * 3 + earliestDate.getTime()), (isValidDate(new Date(twentyFivePercentDone * 3 + earliestDate.getTime()))) ? test(startDate, new Date(twentyFivePercentDone * 3 + earliestDate.getTime()), formattedData, true).confidence[3].value : null)
+            },
+            
+        };
 
-        const threeTix95conf = formatDate(addDays(threeTixDay, threeTix.confidence[3].value))
-        const threeTix95confSkew = formatDate(addDays(threeTixDay, threeTixSkew.confidence[3].value))
-
-        const green = {
-            background: "green"
+        function setStyle(confidenceDate) {
+            const green = {
+                background: "green"
+            }
+            const red = {
+                background: "red"
+            }
+            const white = {
+                background: "white"
+            }
+            if (!isValidDate(confidenceDate)) {
+                return white;
+            } else {
+            return (new Date(confidenceDate).getTime() > tableData.completionDate.getTime()) ? green : red
+            }
         }
-        const red = {
-            background: "red"
-        }
-        
-
 
         return (
                 <tbody>
                 <tr>
                     <td>{props.data.projectName}</td>
-                    <td>{formatDate(Date(props.data.completionDate))}</td>
-                    <td>{formatDate(threeTixDay)}</td>
-                    <td style={}>{threeTix95conf}</td>
-                    <td>{threeTix95confSkew}</td>
+                    <td>{formatDate(tableData.completionDate)}</td>
+                    <td>{formatDate(tableData.threeTix.today)}</td>
+                    <td style={setStyle(tableData.threeTix.normal)}>{formatDate(tableData.threeTix.normal)}</td>
+                    <td style={setStyle(tableData.threeTix.skew)}>{formatDate(tableData.threeTix.skew)}</td>
+                    <td>{formatDate(tableData.sixTix.today)}</td>
+                    <td style={setStyle(tableData.sixTix.normal)}>{formatDate(tableData.sixTix.normal)}</td>
+                    <td style={setStyle(tableData.sixTix.skew)}>{formatDate(tableData.sixTix.skew)}</td>
+                    <td>{formatDate(tableData.elevenTix.today)}</td>
+                    <td style={setStyle(tableData.elevenTix.normal)}>{formatDate(tableData.elevenTix.normal)}</td>
+                    <td style={setStyle(tableData.elevenTix.skew)}>{formatDate(tableData.elevenTix.skew)}</td>
+                    <td>{formatDate(tableData.twentyFivePercent.today)}</td>
+                    <td style={setStyle(tableData.twentyFivePercent.normal)}>{formatDate(tableData.twentyFivePercent.normal)}</td>
+                    <td style={setStyle(tableData.twentyFivePercent.skew)}>{formatDate(tableData.twentyFivePercent.skew)}</td>
+                    <td>{formatDate(tableData.fiftyPercent.today)}</td>
+                    <td style={setStyle(tableData.fiftyPercent.normal)}>{formatDate(tableData.fiftyPercent.normal)}</td>
+                    <td style={setStyle(tableData.fiftyPercent.skew)}>{formatDate(tableData.fiftyPercent.skew)}</td>
+                    <td>{formatDate(tableData.seventyFivePercent.today)}</td>
+                    <td style={setStyle(tableData.seventyFivePercent.normal)}>{formatDate(tableData.seventyFivePercent.normal)}</td>
+                    <td style={setStyle(tableData.seventyFivePercent.skew)}>{formatDate(tableData.seventyFivePercent.skew)}</td>
                 </tr>
                 </tbody>
         )
