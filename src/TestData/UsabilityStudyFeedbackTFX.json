@@ -2,8 +2,6 @@
     "csvfile": {},
     "data": [
         {
-            "Key": "TFX-3427",
-            "Summary": "Template Summary Info is not always available on the review step",
             "Created": "2020-08-06T18:53:00.000Z",
             "New": "Aug/06/2020 1:53 PM",
             "Proposed": "-",
@@ -17,8 +15,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "TFX-3357",
-            "Summary": "Show verified count as a badge",
             "Created": "2020-07-20T19:30:00.000Z",
             "New": "Jul/20/2020 2:30 PM",
             "Proposed": "-",
@@ -32,8 +28,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "TFX-2901",
-            "Summary": "Store user's \"unofficial copy\" preference when adding PDFs",
             "Created": "2020-04-09T19:37:00.000Z",
             "New": "Apr/09/2020 2:37 PM",
             "Proposed": "-",
@@ -47,8 +41,6 @@
             "Lead Time": 25
         },
         {
-            "Key": "TFX-2847",
-            "Summary": "Informational notices should stay verified forever.",
             "Created": "2020-03-31T20:42:00.000Z",
             "New": "Mar/31/2020 3:42 PM",
             "Proposed": "-",
@@ -62,8 +54,6 @@
             "Lead Time": 9
         },
         {
-            "Key": "TFX-2846",
-            "Summary": "Contact Information For Filings Defaults To The Currently Logged In User",
             "Created": "2020-03-31T18:36:00.000Z",
             "New": "Mar/31/2020 1:36 PM",
             "Proposed": "-",
@@ -77,8 +67,6 @@
             "Lead Time": 5
         },
         {
-            "Key": "TFX-2844",
-            "Summary": "Change Add button on Notify Step to match Add button on Co-Reg",
             "Created": "2020-03-31T18:29:00.000Z",
             "New": "Mar/31/2020 1:29 PM",
             "Proposed": "-",
@@ -92,8 +80,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "TFX-2843",
-            "Summary": "Notify step header must include 'optional'",
             "Created": "2020-03-31T18:25:00.000Z",
             "New": "Mar/31/2020 1:25 PM",
             "Proposed": "-",
@@ -107,8 +93,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "TFX-2841",
-            "Summary": "Co-Reg: Users missing the 'Add' button after entering co-registrant data.",
             "Created": "2020-03-31T18:21:00.000Z",
             "New": "Mar/31/2020 1:21 PM",
             "Proposed": "-",
@@ -122,8 +106,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "TFX-2840",
-            "Summary": "Max length on CIK and CCC",
             "Created": "2020-03-31T18:17:00.000Z",
             "New": "Mar/31/2020 1:17 PM",
             "Proposed": "-",
@@ -137,8 +119,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "TFX-2839",
-            "Summary": "Form Info: CCC does not validate until CIK entered and validated.",
             "Created": "2020-03-31T18:15:00.000Z",
             "New": "Mar/31/2020 1:15 PM",
             "Proposed": "-",
@@ -152,8 +132,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "TFX-2837",
-            "Summary": "Update Language and Icon on Filing Drawer empty state landing page",
             "Created": "2020-03-31T18:04:00.000Z",
             "New": "Mar/31/2020 1:04 PM",
             "Proposed": "-",
@@ -167,8 +145,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "TFX-2654",
-            "Summary": "Add A Reorder Button To The Label Step",
             "Created": "2020-03-12T21:19:00.000Z",
             "New": "Mar/12/2020 4:19 PM",
             "Proposed": "-",
@@ -182,8 +158,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "TFX-2094",
-            "Summary": "Add Template Summary to Review Step",
             "Created": "2019-12-09T21:37:00.000Z",
             "New": "Jan/30/2020 9:36 AM",
             "Proposed": "-",
@@ -197,8 +171,6 @@
             "Lead Time": 7
         },
         {
-            "Key": "TFX-2047",
-            "Summary": "Update 'period of report' input in NG Filing experiencing for filings that don't require it",
             "Created": "2019-11-26T22:19:00.000Z",
             "New": "Nov/27/2019 9:52 AM",
             "Proposed": "Nov/26/2019 4:19 PM",

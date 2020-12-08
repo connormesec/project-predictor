@@ -2,8 +2,6 @@
     "csvfile": {},
     "data": [
         {
-            "Key": "DT-19376",
-            "Summary": "[DPC] Remove Spreadsheets Blacklines launch darkly flag",
             "Created": "2020-09-30T15:17:00.000Z",
             "Verified": "Oct/01/2020 1:17 PM",
             "New": "Sep/30/2020 10:17 AM",
@@ -18,8 +16,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19291",
-            "Summary": "Table header colors not active on blackline diffs after opening document second time",
             "Created": "2020-09-04T18:34:00.000Z",
             "Verified": "-",
             "New": "Sep/10/2020 10:39 AM",
@@ -34,8 +30,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19272",
-            "Summary": "Milestones aren't showing in Blacklines panels for Spreadsheets",
             "Created": "2020-08-28T22:14:00.000Z",
             "Verified": "Sep/01/2020 2:19 PM",
             "New": "Aug/28/2020 5:14 PM",
@@ -50,8 +44,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19271",
-            "Summary": "Split diff background in large merge cell doesn't always render",
             "Created": "2020-08-28T21:27:00.000Z",
             "Verified": "-",
             "New": "Sep/01/2020 3:17 PM",
@@ -66,8 +58,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19253",
-            "Summary": "(PDF Export) Column tracking indicators on edge of page are not drawn correctly",
             "Created": "2020-08-27T14:27:00.000Z",
             "Verified": "Sep/02/2020 1:07 PM",
             "New": "Aug/27/2020 9:27 AM",
@@ -82,8 +72,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19245",
-            "Summary": "Split diff rendering is broken with ?automation=true",
             "Created": "2020-08-25T22:34:00.000Z",
             "Verified": "Sep/03/2020 8:52 AM",
             "New": "Aug/26/2020 3:11 PM",
@@ -98,8 +86,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19244",
-            "Summary": "Cannot export to PDF with deleted columns",
             "Created": "2020-08-25T22:15:00.000Z",
             "Verified": "Aug/27/2020 3:52 PM",
             "New": "Aug/25/2020 5:15 PM",
@@ -114,8 +100,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19234",
-            "Summary": "Insertions from a collaborator between undo/redo insertions cause incorrect rows to be tracked",
             "Created": "2020-08-21T19:27:00.000Z",
             "Verified": "-",
             "New": "Sep/04/2020 3:38 PM",
@@ -130,8 +114,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19233",
-            "Summary": "Undo/redo with insertions that cancel out other insertions causes incorrect tracked rows",
             "Created": "2020-08-21T19:19:00.000Z",
             "Verified": "-",
             "New": "Sep/04/2020 3:38 PM",
@@ -146,8 +128,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19232",
-            "Summary": "Content in these inserted rows don't have the correct formatting",
             "Created": "2020-08-21T17:10:00.000Z",
             "Verified": "-",
             "New": "Aug/21/2020 12:10 PM",
@@ -162,8 +142,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19230",
-            "Summary": "Blackline creation fails with long names",
             "Created": "2020-08-21T17:00:00.000Z",
             "Verified": "-",
             "New": "Aug/21/2020 12:00 PM",
@@ -178,8 +156,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19229",
-            "Summary": "Display years on revision dates in blackline properties and blackline history panels for past years",
             "Created": "2020-08-21T16:57:00.000Z",
             "Verified": "Aug/31/2020 11:48 AM",
             "New": "Aug/21/2020 11:57 AM",
@@ -194,8 +170,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-19228",
-            "Summary": "Creating a blackline from a historical revision results in unexpected behavior",
             "Created": "2020-08-21T16:41:00.000Z",
             "Verified": "Aug/28/2020 3:30 PM",
             "New": "Aug/21/2020 11:41 AM",
@@ -210,8 +184,6 @@
             "Lead Time": 5
         },
         {
-            "Key": "DT-19226",
-            "Summary": "Restricted sheet modal doesn't make sense in blacklines",
             "Created": "2020-08-21T16:28:00.000Z",
             "Verified": "Sep/02/2020 11:52 AM",
             "New": "Aug/21/2020 11:28 AM",
@@ -226,8 +198,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19225",
-            "Summary": "Weird rendering in cells when scrolling in spreadsheet blackline",
             "Created": "2020-08-21T16:19:00.000Z",
             "Verified": "Aug/29/2020 10:35 AM",
             "New": "Aug/21/2020 11:19 AM",
@@ -242,8 +212,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-19219",
-            "Summary": "Update blackline pdf export messaging when cell count exceeded",
             "Created": "2020-08-19T21:33:00.000Z",
             "Verified": "Sep/03/2020 12:50 PM",
             "New": "Aug/19/2020 4:33 PM",
@@ -258,8 +226,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19215",
-            "Summary": "Functional test for Spreadsheet blacklines",
             "Created": "2020-08-19T16:06:00.000Z",
             "Verified": "Sep/09/2020 9:35 AM",
             "New": "Aug/19/2020 11:06 AM",
@@ -274,8 +240,6 @@
             "Lead Time": 15
         },
         {
-            "Key": "DT-19209",
-            "Summary": "Spreadsheets blacklines advanced options not updated when switching sheets",
             "Created": "2020-08-18T18:30:00.000Z",
             "Verified": "Aug/20/2020 4:50 PM",
             "New": "Aug/18/2020 1:30 PM",
@@ -290,8 +254,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19204",
-            "Summary": "Blackline current section option is always disabled for spreadsheets",
             "Created": "2020-08-17T20:26:00.000Z",
             "Verified": "Aug/18/2020 3:03 PM",
             "New": "Aug/17/2020 3:26 PM",
@@ -306,8 +268,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-19201",
-            "Summary": "Re-enable advanced options for spreadsheet blacklines",
             "Created": "2020-08-14T21:52:00.000Z",
             "Verified": "Aug/16/2020 11:30 AM",
             "New": "Aug/14/2020 4:52 PM",
@@ -322,8 +282,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-19200",
-            "Summary": "Build section list correctly for spreadsheets when performing a partial blackline",
             "Created": "2020-08-14T21:51:00.000Z",
             "Verified": "Aug/17/2020 3:49 PM",
             "New": "Aug/14/2020 4:51 PM",
@@ -338,8 +296,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19197",
-            "Summary": "Cell contents restored improperly with multiple inserted and deleted rows and columns",
             "Created": "2020-08-13T22:30:00.000Z",
             "Verified": "Aug/26/2020 1:44 PM",
             "New": "Aug/13/2020 5:30 PM",
@@ -354,8 +310,6 @@
             "Lead Time": 8
         },
         {
-            "Key": "DT-19174",
-            "Summary": "Update spreadsheets blacklines to use the blackline icon",
             "Created": "2020-08-07T19:06:00.000Z",
             "Verified": "Aug/18/2020 3:50 PM",
             "New": "Aug/07/2020 2:06 PM",
@@ -370,8 +324,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-19173",
-            "Summary": "Enable exporting a blackline as a PDF from the blacklines history panel",
             "Created": "2020-08-07T19:04:00.000Z",
             "Verified": "Aug/20/2020 1:56 PM",
             "New": "Aug/07/2020 2:04 PM",
@@ -386,8 +338,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19171",
-            "Summary": "Open source doc in Blackline while viewing a revision in source doc",
             "Created": "2020-08-06T20:24:00.000Z",
             "Verified": "Aug/19/2020 4:17 PM",
             "New": "Aug/06/2020 3:24 PM",
@@ -402,8 +352,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19170",
-            "Summary": "Remove the \"Advanced\" option in the spreadsheets create blackline form",
             "Created": "2020-08-06T19:02:00.000Z",
             "Verified": "Aug/12/2020 1:23 PM",
             "New": "Aug/06/2020 2:02 PM",
@@ -418,8 +366,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-19167",
-            "Summary": "Conditional Formatting Background Fill Not Showing In SS Blackline Viewer",
             "Created": "2020-08-06T18:36:00.000Z",
             "Verified": "Aug/14/2020 4:37 PM",
             "New": "Aug/06/2020 1:36 PM",
@@ -434,8 +380,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19165",
-            "Summary": "Add document title, author, date to blackline review toolbar",
             "Created": "2020-08-06T18:21:00.000Z",
             "Verified": "Aug/17/2020 10:00 AM",
             "New": "Aug/06/2020 1:21 PM",
@@ -450,8 +394,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-19163",
-            "Summary": "wData connections should show up in spreadsheets blackline outline",
             "Created": "2020-08-06T16:23:00.000Z",
             "Verified": "Aug/21/2020 2:36 PM",
             "New": "Aug/06/2020 11:23 AM",
@@ -466,8 +408,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19159",
-            "Summary": "Spreadsheets blackline restored deleted column breaks inline diffs",
             "Created": "2020-08-05T21:27:00.000Z",
             "Verified": "Aug/13/2020 4:15 PM",
             "New": "Aug/05/2020 4:27 PM",
@@ -482,8 +422,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-19148",
-            "Summary": "Improve tracked row and column diff UX (doc_plat_client)",
             "Created": "2020-08-03T14:49:00.000Z",
             "Verified": "Aug/13/2020 3:52 PM",
             "New": "Aug/03/2020 9:49 AM",
@@ -498,8 +436,6 @@
             "Lead Time": 9
         },
         {
-            "Key": "DT-19135",
-            "Summary": "Update Status Bar labels",
             "Created": "2020-07-30T18:51:00.000Z",
             "Verified": "Aug/20/2020 3:56 PM",
             "New": "Aug/14/2020 12:53 PM",
@@ -514,8 +450,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19134",
-            "Summary": "Disable outline labels when app is in read only mode",
             "Created": "2020-07-30T18:44:00.000Z",
             "Verified": "Aug/06/2020 4:30 PM",
             "New": "Jul/30/2020 1:44 PM",
@@ -530,8 +464,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-19133",
-            "Summary": "Improve performance of row/column tracking headers",
             "Created": "2020-07-30T17:45:00.000Z",
             "Verified": "Aug/12/2020 2:40 PM",
             "New": "Jul/30/2020 12:45 PM",
@@ -546,8 +478,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-19103",
-            "Summary": "Update SectionTrackChangesInfo during blackline generation",
             "Created": "2020-07-24T17:00:00.000Z",
             "Verified": "Jul/28/2020 9:50 AM",
             "New": "Jul/24/2020 12:00 PM",
@@ -562,8 +492,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19095",
-            "Summary": "Client side permissions",
             "Created": "2020-07-22T21:29:00.000Z",
             "Verified": "Jul/30/2020 2:36 PM",
             "New": "Jul/22/2020 4:29 PM",
@@ -578,8 +506,6 @@
             "Lead Time": 6
         },
         {
-            "Key": "DT-19094",
-            "Summary": "Add BranchFromID to the GetDocumentData response",
             "Created": "2020-07-22T21:15:00.000Z",
             "Verified": "Jul/23/2020 1:57 PM",
             "New": "Jul/22/2020 4:15 PM",
@@ -594,8 +520,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-19092",
-            "Summary": "Unable to open spreadsheets blacklines in deployed environments",
             "Created": "2020-07-22T16:22:00.000Z",
             "Verified": "Jul/23/2020 1:34 PM",
             "New": "Jul/22/2020 11:22 AM",
@@ -610,8 +534,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-19084",
-            "Summary": "Enable Spreadsheets blackline panel to load the outline for advanced options",
             "Created": "2020-07-21T19:35:00.000Z",
             "Verified": "-",
             "New": "Jul/21/2020 2:35 PM",
@@ -626,8 +548,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-19083",
-            "Summary": "Highlight tracked row and column headers (w_table)",
             "Created": "2020-07-21T15:57:00.000Z",
             "Verified": "Jul/23/2020 1:18 PM",
             "New": "Jul/21/2020 10:57 AM",
@@ -642,8 +562,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-19058",
-            "Summary": "Render diffs inline when viewing a spreadsheet blackline",
             "Created": "2020-07-16T20:26:00.000Z",
             "Verified": "Jul/22/2020 12:45 PM",
             "New": "Jul/16/2020 3:26 PM",
@@ -658,8 +576,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-19046",
-            "Summary": "Highlight tracked row and column headers (doc_plat_client)",
             "Created": "2020-07-15T22:28:00.000Z",
             "Verified": "Jul/30/2020 3:10 PM",
             "New": "Jul/15/2020 5:28 PM",
@@ -674,8 +590,6 @@
             "Lead Time": 9
         },
         {
-            "Key": "DT-19000",
-            "Summary": "Add tooltip to track changes/blacklines outline indicators",
             "Created": "2020-07-09T17:17:00.000Z",
             "Verified": "Aug/14/2020 12:02 PM",
             "New": "Jul/09/2020 12:17 PM",
@@ -690,8 +604,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18994",
-            "Summary": "Improve tracked row and column diff UX (wContent)",
             "Created": "2020-07-08T19:25:00.000Z",
             "Verified": "Aug/13/2020 2:45 PM",
             "New": "Jul/08/2020 2:25 PM",
@@ -706,8 +618,6 @@
             "Lead Time": 17
         },
         {
-            "Key": "DT-18991",
-            "Summary": "Restore deleted tables to a logical index in the outline",
             "Created": "2020-07-08T18:13:00.000Z",
             "Verified": "Jul/30/2020 2:54 PM",
             "New": "Jul/08/2020 1:13 PM",
@@ -722,8 +632,6 @@
             "Lead Time": 6
         },
         {
-            "Key": "DT-18989",
-            "Summary": "Spreadsheets Blackline PDF",
             "Created": "2020-07-08T14:58:00.000Z",
             "Verified": "Aug/10/2020 10:06 AM",
             "New": "Jul/08/2020 9:58 AM",
@@ -738,8 +646,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-18988",
-            "Summary": "Restore table connections in deleted tables",
             "Created": "2020-07-08T14:57:00.000Z",
             "Verified": "Jul/30/2020 5:17 PM",
             "New": "Jul/08/2020 9:57 AM",
@@ -754,8 +660,6 @@
             "Lead Time": 8
         },
         {
-            "Key": "DT-18986",
-            "Summary": "Restore freeze panes in deleted tables",
             "Created": "2020-07-08T14:50:00.000Z",
             "Verified": "-",
             "New": "Jul/08/2020 9:50 AM",
@@ -770,8 +674,6 @@
             "Lead Time": "-"
         },
         {
-            "Key": "DT-18985",
-            "Summary": "Restore filters and filtered rows in deleted tables",
             "Created": "2020-07-08T14:49:00.000Z",
             "Verified": "Jul/21/2020 1:26 PM",
             "New": "Jul/08/2020 9:49 AM",
@@ -786,8 +688,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-18984",
-            "Summary": "Add the Blacklines panel to spreadsheets",
             "Created": "2020-07-08T14:45:00.000Z",
             "Verified": "Aug/13/2020 9:24 AM",
             "New": "Jul/08/2020 9:45 AM",
@@ -802,8 +702,6 @@
             "Lead Time": 9
         },
         {
-            "Key": "DT-18982",
-            "Summary": "Enable blacklines in the Spreadsheets History panel",
             "Created": "2020-07-08T14:32:00.000Z",
             "Verified": "Jul/28/2020 10:46 AM",
             "New": "Jul/08/2020 9:32 AM",
@@ -818,8 +716,6 @@
             "Lead Time": 9
         },
         {
-            "Key": "DT-18974",
-            "Summary": "Outline Indicators - Use trackType on the Client",
             "Created": "2020-07-07T21:57:00.000Z",
             "Verified": "Aug/12/2020 4:25 PM",
             "New": "Jul/07/2020 4:57 PM",
@@ -834,8 +730,6 @@
             "Lead Time": 7
         },
         {
-            "Key": "DT-18972",
-            "Summary": "Outline Panel",
             "Created": "2020-07-07T21:21:00.000Z",
             "Verified": "Aug/04/2020 9:22 AM",
             "New": "Jul/07/2020 4:21 PM",
@@ -850,8 +744,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18970",
-            "Summary": "Blackline Properties Panel",
             "Created": "2020-07-07T19:38:00.000Z",
             "Verified": "Aug/06/2020 11:26 AM",
             "New": "Jul/07/2020 2:38 PM",
@@ -866,8 +758,6 @@
             "Lead Time": 5
         },
         {
-            "Key": "DT-18962",
-            "Summary": "Blackline Toolbar (Find)",
             "Created": "2020-07-07T14:25:00.000Z",
             "Verified": "Jul/31/2020 2:12 PM",
             "New": "Jul/07/2020 9:25 AM",
@@ -882,8 +772,6 @@
             "Lead Time": 1
         },
         {
-            "Key": "DT-18961",
-            "Summary": "Blackline Toolbar (Show/Hide Non-printing Characters)",
             "Created": "2020-07-07T14:07:00.000Z",
             "Verified": "Jul/31/2020 9:28 AM",
             "New": "Jul/07/2020 9:07 AM",
@@ -898,8 +786,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-18960",
-            "Summary": "Blackline Toolbar (Show/Hide Gridlines)",
             "Created": "2020-07-07T13:45:00.000Z",
             "Verified": "Jul/31/2020 1:28 PM",
             "New": "Jul/07/2020 8:45 AM",
@@ -914,8 +800,6 @@
             "Lead Time": 4
         },
         {
-            "Key": "DT-18943",
-            "Summary": "Blackline Toolbar (Save PDF)",
             "Created": "2020-07-01T16:28:00.000Z",
             "Verified": "Jul/29/2020 2:56 PM",
             "New": "Jul/01/2020 11:28 AM",
@@ -930,8 +814,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-18942",
-            "Summary": "Blackline Toolbar (Send for Review, Print, Show Indicators, Show Changes)",
             "Created": "2020-07-01T16:24:00.000Z",
             "Verified": "Jul/28/2020 10:14 AM",
             "New": "Jul/01/2020 11:24 AM",
@@ -946,8 +828,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18941",
-            "Summary": "Blackline Toolbar (Previous and Next Change)",
             "Created": "2020-07-01T16:21:00.000Z",
             "Verified": "Jul/24/2020 11:18 AM",
             "New": "Jul/01/2020 11:21 AM",
@@ -962,8 +842,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18940",
-            "Summary": "Blackline Toolbar",
             "Created": "2020-07-01T15:49:00.000Z",
             "Verified": "Jul/22/2020 12:45 PM",
             "New": "Jul/01/2020 10:49 AM",
@@ -978,8 +856,6 @@
             "Lead Time": 5
         },
         {
-            "Key": "DT-18939",
-            "Summary": "Use view only when viewing a blackline",
             "Created": "2020-07-01T14:53:00.000Z",
             "Verified": "Jul/30/2020 2:36 PM",
             "New": "Jul/07/2020 11:26 AM",
@@ -994,8 +870,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18938",
-            "Summary": "Load spreadsheets IsBlackline",
             "Created": "2020-07-01T14:47:00.000Z",
             "Verified": "Jul/16/2020 1:56 PM",
             "New": "Jul/01/2020 9:47 AM",
@@ -1010,8 +884,6 @@
             "Lead Time": 6
         },
         {
-            "Key": "DT-18937",
-            "Summary": "Add IsBlackline to the GetDocumentData response",
             "Created": "2020-07-01T14:24:00.000Z",
             "Verified": "Jul/09/2020 12:16 PM",
             "New": "Jul/01/2020 9:24 AM",
@@ -1026,8 +898,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DT-18936",
-            "Summary": "Add spreadsheet dev tools for creating a blackline",
             "Created": "2020-07-01T13:19:00.000Z",
             "Verified": "Jul/16/2020 4:16 PM",
             "New": "Jul/01/2020 8:19 AM",
@@ -1042,8 +912,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18935",
-            "Summary": "Create a DatatableBlacklineExperienceConfig",
             "Created": "2020-07-01T13:14:00.000Z",
             "Verified": "Jul/13/2020 5:09 PM",
             "New": "Jul/01/2020 8:14 AM",
@@ -1058,8 +926,6 @@
             "Lead Time": 3
         },
         {
-            "Key": "DT-18934",
-            "Summary": "Restore deleted tables with their original name",
             "Created": "2020-07-01T13:03:00.000Z",
             "Verified": "Jul/20/2020 10:58 AM",
             "New": "Jul/01/2020 8:03 AM",
@@ -1074,8 +940,6 @@
             "Lead Time": 8
         },
         {
-            "Key": "DT-18933",
-            "Summary": "Update GetOperations to handle diffing Spreadsheets outlines",
             "Created": "2020-07-01T12:58:00.000Z",
             "Verified": "Jul/14/2020 11:15 AM",
             "New": "Jul/01/2020 7:58 AM",
@@ -1090,8 +954,6 @@
             "Lead Time": 9
         },
         {
-            "Key": "DOCPLAT-7890",
-            "Summary": "When generating a PDF export of a blackline, make sure to pull in the ",
             "Created": "2020-08-24T17:37:00.000Z",
             "Verified": "Aug/25/2020 11:15 AM",
             "New": "Aug/24/2020 12:37 PM",
@@ -1106,8 +968,6 @@
             "Lead Time": 2
         },
         {
-            "Key": "DOCPLAT-7578",
-            "Summary": "Use server info to set table track status",
             "Created": "2020-07-20T18:20:00.000Z",
             "Verified": "Jul/28/2020 3:03 PM",
             "New": "Jul/20/2020 1:20 PM",

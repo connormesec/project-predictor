@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Papa from 'papaparse';
 import Chart from './Chart';
 import DatePicker from "react-datepicker";
@@ -69,8 +69,6 @@ class FileReader extends React.Component {
 
   render() {
     const { isChecked } = this.state;
-    console.log(this.state.csvfile);
-    console.log(this.state);
     if (!this.state.data) {
       return (
         <div>
