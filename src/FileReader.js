@@ -1,180 +1,153 @@
 import React, { useState, useEffect } from "react";
-import Papa from 'papaparse';
-import Chart from './Chart';
+import Papa from "papaparse";
+import Chart from "./Chart";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import IAM from './TestData/IAM.json';
-import CEREBRAL from './TestData/CEREBRAL.json';
-import Usability from './TestData/UsabilityStudyFeedbackTFX.json';
-import MarkAsCorrect from './TestData/MarkAsCorrect.json';
-import ResourceManagement from './TestData/ResourceMangement.json';
-import SSBlackline from './TestData/SpreadSheetsBlackline.json';
+import IAM from "./TestData/IAM.json";
+import CEREBRAL from "./TestData/CEREBRAL.json";
+import Usability from "./TestData/UsabilityStudyFeedbackTFX.json";
+import MarkAsCorrect from "./TestData/MarkAsCorrect.json";
+import ResourceManagement from "./TestData/ResourceMangement.json";
+import SSBlackline from "./TestData/SpreadSheetsBlackline.json";
 
-var today = new Date();
-var dpStartDate = undefined;
-class FileReader extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      csvfile: undefined,
-      data: undefined,
-      today: today,
-      startDate: dpStartDate,
-      isChecked: false,
-      //for the test
-      isTest: false,
-      completionDate: new Date('12/2/2020'),
-      showComponent: false,
-    };
-    this.updateData = this.updateData.bind(this);
-    this._onButtonClick = this._onButtonClick.bind(this);
-  }
+// import { calculateMonteCarlo } from './montecarlo.js';
 
-  handleChange = event => {
-    this.setState({
-      csvfile: event.target.files[0]
-    });
+function FileReader(props) {
+  const [csvFile, setCsvFile] = useState();
+  const [data, setData] = useState();
+  const [simulationDate, setSimulationDate] = useState(new Date());
+  const [startDate, setStartDate] = useState();
+  const [isChecked, setIsChecked] = useState(false);
+  const [showComponent, setShowComponent] = useState(false);
+  const [monteCarloResult, setMonteCarloResult] = useState();
+
+  const handleChange = (event) => setCsvFile(event.target.files[0]);
+  const toggleCheckboxChange = () => setIsChecked(!isChecked);
+  const updateData = (result) => {
+    setData(result.data);
+    // setMonteCarloResult(calculateMonteCarlo(
+
+    // ));
   };
-
-  importCSV = () => {
-    const { csvfile } = this.state;
-    Papa.parse(csvfile, {
-      complete: this.updateData,
-      header: true
+  const importCSV = () =>
+    Papa.parse(csvFile, {
+      complete: updateData,
+      header: true,
     });
-  };
-
-  updateData(result) {
-    var data = result.data;
-    this.setState({
-      data: data,
-      today: today,
-      startDate: dpStartDate
-    });
-  }
-
-  _onButtonClick() {
-    this.setState({
-      showComponent: true,
-    });
-  }
-
-  toggleCheckboxChange = () => {
-    this.setState(({ isChecked }) => (
-      {
-        isChecked: !isChecked,
-      }
-    ));
-  }
-
-  render() {
-    const { isChecked } = this.state;
-    if (!this.state.data) {
-      return (
+  const onButtonClick = () => setShowComponent(true);
+  
+  if (!data) {
+    return (
+      <div>
+        <h2>Import CSV File!</h2>
+        <input
+          className="csv-input"
+          type="file"
+          name="file"
+          onChange={handleChange}
+        />
+        <p />
         <div>
-          <h2>Import CSV File!</h2>
-          <input
-            className="csv-input"
-            type="file"
-            ref={input => {
-              this.filesInput = input;
-            }}
-            name="file"
-            placeholder={null}
-            onChange={this.handleChange}
+          <DatePicker
+            selected={simulationDate}
+            onChange={(date) => setSimulationDate(date)}
+            placeholderText="Today"
           />
-          <p />
-          <div><DatePickerToday /></div>
-          <p />
-          <div><DatePickerStartDate /></div>
-          <p />
-          <input
-            type="checkbox"
-            value="skewNormal"
-            checked={isChecked}
-            onChange={this.toggleCheckboxChange}
-          /> Use Skew-Normal
-          <p />
-          <button onClick={this.importCSV}>RUN!</button>
-          <p />
-          <div>
-          <button onClick={this._onButtonClick}>Run Test</button>
-          {this.state.showComponent ?
-           test() : null}
-      </div>
         </div>
-      );
-    } else {
-      return (
+        <p />
         <div>
-          <div className="importHeader">
-            <h2>Import CSV File!</h2>
-            <input
-              className="csv-input"
-              type="file"
-              ref={input => {
-                this.filesInput = input;
-              }}
-              name="file"
-              placeholder={null}
-              onChange={this.handleChange}
-            />
-            <p />
-            <div><DatePickerToday /></div>
-            <p />
-            <div><DatePickerStartDate /></div>
-            <p />
-            <input
-              type="checkbox"
-              value="skewNormal"
-              checked={isChecked}
-              onChange={this.toggleCheckboxChange}
-            /> Use Skew-Normal
-          <p />
-            <button onClick={this.importCSV}>RUN!</button>
-          </div>
-          <button
-            className="button"
-            onClick={() => {
-              exportToJson(this.state, "export");
-            }}
-          >
-            Download JSON
-          </button>
-          <p />
-          <div>
-            <Chart data={this.state} />
-          </div>
-
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            placeholderText="Start Date (can be blank)"
+          />
         </div>
-      )
-    }
-
+        <p />
+        <input
+          type="checkbox"
+          value="skewNormal"
+          checked={isChecked}
+          onChange={toggleCheckboxChange}
+        />{" "}
+        Use Skew-Normal
+        <p />
+        <button onClick={importCSV}>RUN!</button>
+        <p />
+        <div>
+          <button onClick={onButtonClick}>Run Test</button>
+          {showComponent && test(monteCarloResult)}
+        </div>
+      </div>
+    );
   }
+
+  // return (
+  //   <div>
+  //     <div className='importHeader'>
+  //       <h2>Import CSV File!</h2>
+  //       <input className='csv-input' type='file' name='file' onChange={handleChange} />
+  //       <p />
+  //       <div>
+  //         <DatePickerToday />
+  //       </div>
+  //       <p />
+  //       <div>
+  //       <DatePicker
+  //     selected={startDate}
+  //     onChange={(date) => setStartDate(date)}
+  //     placeholderText='Start Date (can be blank)'
+  //   />
+  //       </div>
+  //       <p />
+  //       <input type='checkbox' value='skewNormal' checked={isChecked} onChange={toggleCheckboxChange} /> Use Skew-Normal
+  //       <p />
+  //       <button onClick={importCSV}>RUN!</button>
+  //     </div>
+  //     <button
+  //       className='button'
+  //       // onClick={() => exportToJson(this.state, 'export')} TODO: Fix this
+  //     >
+  //       Download JSON
+  //     </button>
+  //     <p />
+  //     <div>
+  //       <Chart
+  //       // data={this.state} TODO: Fix this
+  //       />
+  //     </div>
+  //   </div>
+  // );
 }
 
-
-function DatePickerToday() {
-  const [startDate, setStartDate] = useState(new Date());
-  today = startDate;
-  console.log(today);
+function DatePickerToday(props) {
+  const { startDate, setStartDate } = useState(new Date());
+  console.log(startDate);
   return (
-    <DatePicker selected={startDate} onChange={date => setStartDate(date)} placeholderText="Today" />
+    <DatePicker
+      selected={startDate}
+      onChange={(date) => setStartDate(date)}
+      placeholderText="Today"
+    />
   );
 }
 
-function DatePickerStartDate() {
-  const [startDate, setStartDate] = useState(undefined);
-  dpStartDate = startDate;
-  console.log(dpStartDate);
+function DatePickerStartDate(props) {
+  const { startDate, setStartDate } = props;
+
   return (
-    <DatePicker selected={dpStartDate} onChange={date => setStartDate(date)} placeholderText="Start Date (can be blank)" />
+    <DatePicker
+      selected={startDate}
+      onChange={(date) => setStartDate(date)}
+      placeholderText="Start Date (can be blank)"
+    />
   );
 }
 
 function exportToJson(exportObj, name) {
-  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
-  var downloadAnchorNode = document.createElement('a');
+  const dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(exportObj));
+  const downloadAnchorNode = document.createElement("a");
   downloadAnchorNode.setAttribute("href", dataStr);
   downloadAnchorNode.setAttribute("download", name + ".json");
   document.body.appendChild(downloadAnchorNode); // required for firefox
@@ -182,13 +155,19 @@ function exportToJson(exportObj, name) {
   downloadAnchorNode.remove();
 }
 
+function test(monteCarloResult) {
+  let jsonFileArray = [
+    IAM,
+    CEREBRAL,
+    Usability,
+    MarkAsCorrect,
+    ResourceManagement,
+    SSBlackline,
+  ];
+  const elements = jsonFileArray.map((jsonFile) => (
+    <Chart data={jsonFile} monteCarloResult={monteCarloResult} />
+  ));
 
-function test() {
-  let jsonFileArray = [IAM, CEREBRAL, Usability, MarkAsCorrect, ResourceManagement, SSBlackline]
-  let elements = [];
-  for (let i = 0; i<jsonFileArray.length ; i++) {
-    elements.push(<Chart data={jsonFileArray[i]} />)
-  }
   return (
     <table>
       <tr>
@@ -224,7 +203,7 @@ function test() {
       </tr>
       {elements}
     </table>
-  )
+  );
 }
 
 export default FileReader;
