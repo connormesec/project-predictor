@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Papa from "papaparse";
 import Chart from "./Chart";
 import DatePicker from "react-datepicker";
@@ -9,8 +9,13 @@ import Usability from "./TestData/UsabilityStudyFeedbackTFX.json";
 import MarkAsCorrect from "./TestData/MarkAsCorrect.json";
 import ResourceManagement from "./TestData/ResourceMangement.json";
 import SSBlackline from "./TestData/SpreadSheetsBlackline.json";
+import 'fontsource-roboto';
+import Button from '@material-ui/core/Button';
 
-// import { calculateMonteCarlo } from './montecarlo.js';
+
+
+
+ //import { calculateMonteCarlo } from './montecarlo.js';
 
 function FileReader(props) {
   const [csvFile, setCsvFile] = useState();
@@ -20,13 +25,15 @@ function FileReader(props) {
   const [isChecked, setIsChecked] = useState(false);
   const [showComponent, setShowComponent] = useState(false);
   const [monteCarloResult, setMonteCarloResult] = useState();
+  const [leadTimeOverride, setLeadTimeOverride] = useState();
+  const [backlogOverride, setBacklogOverride] = useState();
 
   const handleChange = (event) => setCsvFile(event.target.files[0]);
   const toggleCheckboxChange = () => setIsChecked(!isChecked);
+  const handleTextChange = (text) => setLeadTimeOverride(text.target.value)
   const updateData = (result) => {
     setData(result.data);
-    // setMonteCarloResult(calculateMonteCarlo(
-
+    // setMonteCarloResult
     // ));
   };
   const importCSV = () =>
@@ -35,8 +42,9 @@ function FileReader(props) {
       header: true,
     });
   const onButtonClick = () => setShowComponent(true);
-  
+
   if (!data) {
+    //console.log(leadTimeOverride.target.value)
     return (
       <div>
         <h2>Import CSV File!</h2>
@@ -74,60 +82,79 @@ function FileReader(props) {
         <button onClick={importCSV}>RUN!</button>
         <p />
         <div>
+        <Button variant="contained" onClick={importCSV}>Run</Button>
+        </div>
+        <div>
           <button onClick={onButtonClick}>Run Test</button>
           {showComponent && test(monteCarloResult)}
         </div>
+        <p />
+        <label>
+          Lead Time Override: 
+          <input type="text" value={leadTimeOverride} onChange={handleTextChange} />
+        </label>
+        <p />
+        <label>
+          Backlog Override: 
+          <input type="text" value={backlogOverride} onChange={(value) => setBacklogOverride(value)} />
+        </label>
       </div>
     );
   }
 
-  // return (
-  //   <div>
-  //     <div className='importHeader'>
-  //       <h2>Import CSV File!</h2>
-  //       <input className='csv-input' type='file' name='file' onChange={handleChange} />
-  //       <p />
-  //       <div>
-  //         <DatePickerToday />
-  //       </div>
-  //       <p />
-  //       <div>
-  //       <DatePicker
-  //     selected={startDate}
-  //     onChange={(date) => setStartDate(date)}
-  //     placeholderText='Start Date (can be blank)'
-  //   />
-  //       </div>
-  //       <p />
-  //       <input type='checkbox' value='skewNormal' checked={isChecked} onChange={toggleCheckboxChange} /> Use Skew-Normal
-  //       <p />
-  //       <button onClick={importCSV}>RUN!</button>
-  //     </div>
-  //     <button
-  //       className='button'
-  //       // onClick={() => exportToJson(this.state, 'export')} TODO: Fix this
-  //     >
-  //       Download JSON
-  //     </button>
-  //     <p />
-  //     <div>
-  //       <Chart
-  //       // data={this.state} TODO: Fix this
-  //       />
-  //     </div>
-  //   </div>
-  // );
-}
-
-function DatePickerToday(props) {
-  const { startDate, setStartDate } = useState(new Date());
-  console.log(startDate);
   return (
-    <DatePicker
-      selected={startDate}
-      onChange={(date) => setStartDate(date)}
-      placeholderText="Today"
-    />
+      <div className='importHeader'>
+      <h2>Import CSV File!</h2>
+        <input
+          className="csv-input"
+          type="file"
+          name="file"
+          onChange={handleChange}
+        />
+        <p />
+        <div>
+          <DatePicker
+            selected={simulationDate}
+            onChange={(date) => setSimulationDate(date)}
+            placeholderText="Today"
+          />
+        </div>
+        <p />
+        <div>
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            placeholderText="Start Date (can be blank)"
+          />
+        </div>
+        <p />
+        <input
+          type="checkbox"
+          value="skewNormal"
+          checked={isChecked}
+          onChange={toggleCheckboxChange}
+        />{" "}
+        Use Skew-Normal
+        <p />
+        <button onClick={importCSV}>RUN!</button>
+        <p />
+        <div>
+          <button onClick={onButtonClick}>Run Test</button>
+          {showComponent && test(monteCarloResult)}
+        </div>
+      <div>
+        <Chart
+         data={{
+          data: data,
+          simulationDate: simulationDate,
+          startDate: startDate,
+          isChecked: isChecked,
+          leadTimeOverride: leadTimeOverride,
+          backlogOverride: backlogOverride
+         }} //TODO: Fix this
+        />
+      </div>
+    </div>
   );
 }
 

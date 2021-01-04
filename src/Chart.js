@@ -461,20 +461,41 @@ function test(startDate, today, formattedData, distType) {
 
 function Chart(props) {
     console.log(props);
-    let today = new Date(props.data.today);
+    let today = new Date(props.data.simulationDate);
     const distType = props.data.isChecked;
     let startDate = props.data.startDate == null ? false : new Date(props.data.startDate);
     const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
-    console.log(formattedData)
+    const leadTimeLastEleven = (props.data.leadTimeOverride) ? props.data.leadTimeOverride.split(',').map(x => x*1) : lastElevenTickets(formattedData, today).map(o => o['Lead Time']);
+    //console.log(computeMeanSdAndItervalRangeMinMax(leadTimeLastEleven))
 
     if (!props.data.isTest) {
     let forplot = createDateArray(formattedData, today, findEarliestDate(formattedData, startDate));
-    const lastElevenData = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
+    const lastElevenData = computeMeanSdAndItervalRangeMinMax(leadTimeLastEleven);
     const randLastElevenData = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(lastElevenData), distType);
-    const historicalLastElevenTickets = computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time']));
     const workAdded = computeMeanSdAndItervalRangeMinMax(forplot.map(o => o.Work_Added));
     const randWorkadded = computeMeanSdAndItervalRangeMinMax(randNumFromDistribution(workAdded));
-    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(lastElevenTickets(formattedData, today).map(o => o['Lead Time'])), distType), forplot.map(o => o.Work_Added), today, formattedData);
+    let myBoyMonte = runMonteCarlo(10000, forplot, randNumFromDistribution(computeMeanSdAndItervalRangeMinMax(leadTimeLastEleven), distType), forplot.map(o => o.Work_Added), today, formattedData);
+    // let plotdata = {
+    //     days : forplot.map(o => o.Day).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day).slice(1)),
+    //     backlog : forplot.map(o => o.Backlog),
+    //     workDone : forplot.map(o => o.Work_Done),
+    //     workIncrease : new Array(forplot.map(o => o.Day).length-1).fill(null).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.backlogIncrease)),
+    //     worstCase : new Array(forplot.map(o => o.Day).length-1).fill(null).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneWorstCase)),
+    //     bestCase : new Array(forplot.map(o => o.Day).length-1).fill(null).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneBestCase)),
+    // };
+    let plotdata = []
+    for (let i = 0; i < forplot.map(o => o.Day).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day).slice(1)).length; i++) {
+        plotdata.push({
+        days : forplot.map(o => o.Day).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.day).slice(1))[i],
+        backlog : forplot.map(o => o.Backlog)[i],
+        workDone : forplot.map(o => o.Work_Done)[i],
+        workIncrease : new Array(forplot.map(o => o.Day).length-1).fill(undefined).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.backlogIncrease))[i],
+        worstCase : new Array(forplot.map(o => o.Day).length-1).fill(undefined).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneWorstCase))[i],
+        bestCase : new Array(forplot.map(o => o.Day).length-1).fill(undefined).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map(o => o.doneBestCase))[i]
+        });
+    }
+
+    console.log(plotdata)
 
     
         return (
@@ -560,10 +581,10 @@ function Chart(props) {
                     <div className="dataBox">
                         <h1>Lead Time</h1>
                         <h3>Historical Values</h3>
-                        <p>{lastElevenTickets(formattedData, today).map(o => o['Lead Time']).map((o) => <>{o},</>)}</p>
-                        <p>Mean: {Math.round(historicalLastElevenTickets.mean * 100) / 100}</p>
-                        <p>Median: {Math.round(historicalLastElevenTickets.median * 100) / 100}</p>
-                        <p>Std Dev: {Math.round(historicalLastElevenTickets.sd * 100) / 100}</p>
+                        <p>{leadTimeLastEleven.map((o) => <>{o},</>)}</p>
+                        <p>Mean: {Math.round(lastElevenData.mean * 100) / 100}</p>
+                        <p>Median: {Math.round(lastElevenData.median * 100) / 100}</p>
+                        <p>Std Dev: {Math.round(lastElevenData.sd * 100) / 100}</p>
                         <h3>Random Values</h3>
                         <p>Mean: {Math.round(randLastElevenData.mean * 100) / 100}</p>
                         <p>Median: {Math.round(randLastElevenData.median * 100) / 100}</p>
@@ -575,7 +596,7 @@ function Chart(props) {
                             data={[
                                 //backlog
                                 {
-                                    x: lastElevenTickets(formattedData, today).map(o => o['Lead Time']),
+                                    x: leadTimeLastEleven,
                                     type: 'histogram',
                                     histnorm: 'probability',
                                     marker: {
