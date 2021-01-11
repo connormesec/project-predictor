@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import Papa from "papaparse";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
@@ -38,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
+    height: "10%",
   },
   toolbarIcon: {
     height: "10%",
@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     height: "10%",
+    display: "flex",
+    justifyContent: "center",
+    background: "#26a69a",
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -64,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: -36,
   },
   menuButtonHidden: {
     display: "none",
@@ -127,11 +130,11 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   overrideField: {
-    
-    height: "91%"
+    height: "91%",
   },
   runButton: {
     height: "15%",
+    background: "#26a69a",
   },
 }));
 
@@ -193,7 +196,7 @@ export default function Dashboard() {
     setDist(event.target.value);
   };
 
-  console.log(leadTimeMaxValueOverride)
+  console.log(leadTimeMaxValueOverride);
 
   return (
     <div className={classes.root}>
@@ -203,18 +206,18 @@ export default function Dashboard() {
         className={clsx(classes.appBar, open && classes.appBarShift)}
       >
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}
-          >
-            <ChevronRightIcon />
-          </IconButton>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              className={clsx(
+                classes.menuButton,
+                open && classes.menuButtonHidden
+              )}
+            >
+              <ChevronRightIcon />
+            </IconButton>
           <Typography
             component="h1"
             variant="h6"
@@ -334,10 +337,19 @@ export default function Dashboard() {
         <Button
           disabled={dist && simulationDate && csvFile ? false : true}
           variant="contained"
+          color="inherit"
           onClick={importCSV}
           className={classes.runButton}
         >
-          Run
+          <Typography
+            component="h1"
+            variant="h6"
+            color="primary"
+            noWrap
+            className={classes.title}
+          >
+            Run
+          </Typography>
         </Button>
       </Drawer>
       <main className={classes.content}>

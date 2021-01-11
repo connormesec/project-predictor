@@ -3,7 +3,6 @@
     "data": [
         {
             "Key": "IAM-1074",
-            "Summary": "Fix security issue with MODE_INHERITABLETHREADLOCAL",
             "Created": "2020-12-02T20:15:00.000Z",
             "In Progress": "2020-12-02T21:21:00.000Z",
             "Merged": "2020-12-03T18:24:00.000Z",
@@ -12,7 +11,6 @@
         },
         {
             "Key": "IAM-1049",
-            "Summary": "Update GroupName Parser to follow new naming conventions",
             "Created": "2020-11-23T20:26:00.000Z",
             "In Progress": "2020-11-24T18:26:00.000Z",
             "Merged": "2020-11-25T20:52:00.000Z",
@@ -21,7 +19,6 @@
         },
         {
             "Key": "IAM-1016",
-            "Summary": "fix_bs_messaging_client",
             "Created": "2020-11-16T19:31:00.000Z",
             "In Progress": "2020-11-16T19:31:00.000Z",
             "Merged": "2020-11-17T17:14:00.000Z",
@@ -30,7 +27,6 @@
         },
         {
             "Key": "IAM-986",
-            "Summary": "Use new endpoint to fetch all org/workspace roles in the org",
             "Created": "2020-11-11T18:50:00.000Z",
             "In Progress": "2020-11-12T20:45:00.000Z",
             "Merged": "2020-11-20T20:40:00.000Z",
@@ -39,7 +35,6 @@
         },
         {
             "Key": "IAM-985",
-            "Summary": "Additional logging ",
             "Created": "2020-11-11T18:17:00.000Z",
             "In Progress": "2020-11-13T17:09:00.000Z",
             "Merged": "-",
@@ -48,7 +43,6 @@
         },
         {
             "Key": "IAM-981",
-            "Summary": "[identity-services] Implement getAllRolesInOrgContexts endpoint",
             "Created": "2020-11-10T19:31:00.000Z",
             "In Progress": "2020-11-12T23:41:00.000Z",
             "Merged": "-",
@@ -57,7 +51,6 @@
         },
         {
             "Key": "IAM-980",
-            "Summary": "[licensing_frugal] add getRolesInAllOrgContext Endpoint",
             "Created": "2020-11-10T19:29:00.000Z",
             "In Progress": "2020-11-12T18:55:00.000Z",
             "Merged": "2020-11-12T19:26:00.000Z",
@@ -66,7 +59,6 @@
         },
         {
             "Key": "IAM-979",
-            "Summary": "GET groups - Move to async calls",
             "Created": "2020-11-09T22:52:00.000Z",
             "In Progress": "2020-11-14T18:24:00.000Z",
             "Merged": "2020-11-25T22:28:00.000Z",
@@ -75,7 +67,6 @@
         },
         {
             "Key": "IAM-978",
-            "Summary": "GET groups - Move pagination out of memory to the requests",
             "Created": "2020-11-09T21:48:00.000Z",
             "In Progress": "2020-11-12T17:19:00.000Z",
             "Merged": "2020-11-13T23:15:00.000Z",
@@ -84,7 +75,6 @@
         },
         {
             "Key": "IAM-977",
-            "Summary": "Fetch workspace roles when we request all groups",
             "Created": "2020-11-09T18:06:00.000Z",
             "In Progress": "2020-11-09T18:07:00.000Z",
             "Merged": "-",
@@ -93,7 +83,6 @@
         },
         {
             "Key": "IAM-976",
-            "Summary": "Paginate datastore reads for the get all groups in org endpoint in bigsky",
             "Created": "2020-11-09T17:43:00.000Z",
             "In Progress": "2020-11-10T17:05:00.000Z",
             "Merged": "2020-11-13T16:53:00.000Z",
@@ -102,7 +91,6 @@
         },
         {
             "Key": "IAM-958",
-            "Summary": "Update the way we request roles",
             "Created": "2020-11-06T23:21:00.000Z",
             "In Progress": "2020-11-06T23:21:00.000Z",
             "Merged": "2020-11-11T23:49:00.000Z",
@@ -111,7 +99,6 @@
         },
         {
             "Key": "IAM-925",
-            "Summary": "Block adding a user to a group if they are not in the workspace/account",
             "Created": "2020-10-29T15:40:00.000Z",
             "In Progress": "2020-11-02T16:02:00.000Z",
             "Merged": "2020-11-04T15:40:00.000Z",
@@ -120,7 +107,6 @@
         },
         {
             "Key": "IAM-921",
-            "Summary": "Set groups enabled application default to TRUE",
             "Created": "2020-10-28T16:14:00.000Z",
             "In Progress": "2020-11-25T19:20:00.000Z",
             "Merged": "2020-11-30T18:12:00.000Z",
@@ -129,7 +115,6 @@
         },
         {
             "Key": "IAM-745",
-            "Summary": "Paginate GET /Groups endpoint",
             "Created": "2020-09-29T17:56:00.000Z",
             "In Progress": "2020-10-30T16:09:00.000Z",
             "Merged": "2020-11-11T18:02:00.000Z",
@@ -138,7 +123,6 @@
         },
         {
             "Key": "IAM-744",
-            "Summary": "bigsky: Implement getGroupsForOrganization",
             "Created": "2020-09-29T17:56:00.000Z",
             "In Progress": "2020-10-06T14:56:00.000Z",
             "Merged": "2020-10-26T22:33:00.000Z",
@@ -147,7 +131,6 @@
         },
         {
             "Key": "IAM-743",
-            "Summary": "admin_frugal: Create a frugal API to fetch all groups in an organization",
             "Created": "2020-09-29T17:47:00.000Z",
             "In Progress": "2020-10-06T13:59:00.000Z",
             "Merged": "2020-10-14T14:59:00.000Z",
@@ -156,7 +139,6 @@
         },
         {
             "Key": "IAM-718",
-            "Summary": "AdminError to ScimException",
             "Created": "2020-09-25T00:58:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -165,7 +147,6 @@
         },
         {
             "Key": "IAM-717",
-            "Summary": "LicensingError to ScimException",
             "Created": "2020-09-25T00:56:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -174,7 +155,6 @@
         },
         {
             "Key": "IAM-716",
-            "Summary": "FWorkspaceError to ScimException ",
             "Created": "2020-09-25T00:56:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -183,7 +163,6 @@
         },
         {
             "Key": "IAM-715",
-            "Summary": "Workspace to GroupResource factory",
             "Created": "2020-09-25T00:49:00.000Z",
             "In Progress": "2020-09-25T00:53:00.000Z",
             "Merged": "-",
@@ -192,7 +171,6 @@
         },
         {
             "Key": "IAM-714",
-            "Summary": "Role GroupResource factory",
             "Created": "2020-09-25T00:47:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -201,7 +179,6 @@
         },
         {
             "Key": "IAM-713",
-            "Summary": "Group GroupResource factory",
             "Created": "2020-09-25T00:46:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -210,7 +187,6 @@
         },
         {
             "Key": "IAM-708",
-            "Summary": "Frugal beans",
             "Created": "2020-09-24T01:44:00.000Z",
             "In Progress": "2020-09-24T01:44:00.000Z",
             "Merged": "2020-10-01T14:21:00.000Z",
@@ -219,7 +195,6 @@
         },
         {
             "Key": "IAM-673",
-            "Summary": "PATCH Role",
             "Created": "2020-09-17T18:05:00.000Z",
             "In Progress": "2020-10-12T22:18:00.000Z",
             "Merged": "2020-11-02T23:52:00.000Z",
@@ -228,7 +203,6 @@
         },
         {
             "Key": "IAM-672",
-            "Summary": "PATCH group",
             "Created": "2020-09-17T18:04:00.000Z",
             "In Progress": "2020-10-07T20:20:00.000Z",
             "Merged": "2020-10-26T20:59:00.000Z",
@@ -237,7 +211,6 @@
         },
         {
             "Key": "IAM-671",
-            "Summary": "PATCH workspace",
             "Created": "2020-09-17T18:04:00.000Z",
             "In Progress": "2020-11-05T17:08:00.000Z",
             "Merged": "2020-11-11T23:38:00.000Z",
@@ -246,7 +219,6 @@
         },
         {
             "Key": "IAM-580",
-            "Summary": "Add External Ids To Workspace",
             "Created": "2020-08-25T23:30:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -255,7 +227,6 @@
         },
         {
             "Key": "IAM-564",
-            "Summary": "PUT role",
             "Created": "2020-08-21T17:46:00.000Z",
             "In Progress": "2020-10-26T22:14:00.000Z",
             "Merged": "2020-11-11T22:53:00.000Z",
@@ -264,7 +235,6 @@
         },
         {
             "Key": "IAM-563",
-            "Summary": "PUT group",
             "Created": "2020-08-21T17:45:00.000Z",
             "In Progress": "2020-10-21T17:16:00.000Z",
             "Merged": "2020-10-28T15:13:00.000Z",
@@ -273,7 +243,6 @@
         },
         {
             "Key": "IAM-561",
-            "Summary": "PUT workspace",
             "Created": "2020-08-21T15:59:00.000Z",
             "In Progress": "2020-10-30T14:44:00.000Z",
             "Merged": "2020-11-11T21:06:00.000Z",
@@ -282,7 +251,6 @@
         },
         {
             "Key": "IAM-560",
-            "Summary": "POST role",
             "Created": "2020-08-21T15:53:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -291,7 +259,6 @@
         },
         {
             "Key": "IAM-559",
-            "Summary": "POST group",
             "Created": "2020-08-21T15:52:00.000Z",
             "In Progress": "2020-10-14T14:18:00.000Z",
             "Merged": "2020-10-28T16:19:00.000Z",
@@ -300,7 +267,6 @@
         },
         {
             "Key": "IAM-558",
-            "Summary": "POST workspace",
             "Created": "2020-08-21T15:51:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -309,7 +275,6 @@
         },
         {
             "Key": "IAM-557",
-            "Summary": "GET Groups/id - role",
             "Created": "2020-08-21T15:49:00.000Z",
             "In Progress": "2020-10-01T14:32:00.000Z",
             "Merged": "2020-10-21T17:25:00.000Z",
@@ -318,7 +283,6 @@
         },
         {
             "Key": "IAM-556",
-            "Summary": "GET Groups/id - Group",
             "Created": "2020-08-21T15:46:00.000Z",
             "In Progress": "2020-09-29T18:25:00.000Z",
             "Merged": "2020-10-19T22:44:00.000Z",
@@ -336,7 +300,6 @@
         },
         {
             "Key": "IAM-554",
-            "Summary": "GET roles",
             "Created": "2020-08-21T15:44:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -345,7 +308,6 @@
         },
         {
             "Key": "IAM-553",
-            "Summary": "GET groups",
             "Created": "2020-08-21T15:42:00.000Z",
             "In Progress": "2020-10-07T15:48:00.000Z",
             "Merged": "2020-10-29T21:08:00.000Z",
@@ -354,7 +316,6 @@
         },
         {
             "Key": "IAM-552",
-            "Summary": "GET workspaces",
             "Created": "2020-08-21T15:42:00.000Z",
             "In Progress": "-",
             "Merged": "-",
@@ -363,7 +324,6 @@
         },
         {
             "Key": "IAM-551",
-            "Summary": "RestController Boilerplate",
             "Created": "2020-08-21T15:38:00.000Z",
             "In Progress": "2020-09-17T20:19:00.000Z",
             "Merged": "2020-09-25T21:04:00.000Z",
@@ -372,7 +332,6 @@
         },
         {
             "Key": "IAM-550",
-            "Summary": "Group Name Parser",
             "Created": "2020-08-21T15:28:00.000Z",
             "In Progress": "2020-09-15T15:29:00.000Z",
             "Merged": "2020-09-28T20:02:00.000Z",
