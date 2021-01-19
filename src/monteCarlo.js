@@ -7,13 +7,14 @@ let leadTimeMaxValue;
 function dateChange(data) {
   let data3 = data.map((datastring) => {
     datastring["Lead Time"] = calcBusinessDays(
-      new Date(datastring["In Progress"]),
+      new Date(datastring["New"]),
       new Date(datastring["Merged"])
     );
     datastring["In Progress"] = new Date(datastring["In Progress"]);
     datastring[createdDate] = new Date(datastring[createdDate]);
     datastring["Merged"] = new Date(datastring["Merged"]);
-    datastring["Closed"] = new Date(datastring["Closed"]);
+    //datastring["Closed"] = new Date(datastring["Closed"]);
+    datastring["New"] = new Date(datastring["New"]);
     return datastring;
   });
   return data3;
@@ -23,8 +24,9 @@ function removeNotWorkedTickets(data) {
   let newArr = [];
   for (var i = 0; i < data.length; i++) {
     if (
-      !isValidDate(data[i].Closed) ||
-      (isValidDate(data[i].Closed) && isValidDate(data[i].Merged))
+      !(isValidDate(data[i].New && data[i].Status === "Closed") && !isValidDate(data[i].Merged))
+      // !isValidDate(data[i].New) ||
+      // (isValidDate(data[i].New) && isValidDate(data[i].Merged))
     ) {
       newArr.push(data[i]);
     }
@@ -37,8 +39,9 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
     datastring.leadTime = null; //calcBusinessDays(new Date(datastring['In Progress']), new Date(datastring['Merged']));
     datastring["In Progress"] = new Date(datastring["In Progress"]);
     datastring[createdDate] = new Date(datastring[createdDate]);
-    datastring["Merged"] = new Date(datastring["Merged"]);
+    datastring["Merged"] = new Date(new Date(datastring["Merged"]).setHours(0, 0, 0, 0));
     datastring["Closed"] = new Date(datastring["Closed"]);
+    datastring["New"] = new Date(new Date(datastring["New"]).setHours(0, 0, 0, 0));
     datastring.alert = "";
     datastring.alertCount = 0;
     return datastring;
@@ -47,14 +50,15 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
   for (var i = 0; i < newData.length; i++) {
     //In progress
     if (
-      !isValidDate(newData[i].Closed) &&
-      isValidDate(newData[i]["In Progress"]) &&
+      !isValidDate(newData[i].Merged) &&
+      isValidDate(newData[i]["New"]) &&
       newData[i].Status !== "New" &&
       newData[i].Status !== "Closed" &&
-      newData[i].Status !== "Resolved"
+      newData[i].Status !== "Resolved" &&
+      newData[i].Status !== "Complete"
     ) {
       newData[i].leadTime = calcBusinessDays(
-        new Date(newData[i]["In Progress"]),
+        new Date(newData[i]["New"]),
         new Date(today)
       );
       newData[i].Status = "In Progress";
@@ -74,14 +78,11 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
     }
     //Complete
     else if (
-      (isValidDate(newData[i].Closed) ||
-        newData[i].Status === "Closed" ||
-        newData[i].Status === "Resolved") &&
       isValidDate(newData[i].Merged) &&
-      isValidDate(newData[i]["In Progress"])
+      isValidDate(newData[i]["New"])
     ) {
       newData[i].leadTime = calcBusinessDays(
-        new Date(newData[i]["In Progress"]),
+        new Date(newData[i]["New"]),
         new Date(newData[i].Merged)
       );
       newData[i].Status = "Complete";
@@ -95,6 +96,7 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
       }
       newArr.push(newData[i]);
     }
+
     //New
     else if (newData[i].Status === "New") {
       if (newData[i]["Effort Points"] === "-") {
@@ -116,7 +118,7 @@ function calcBusinessDays(dDate1, dDate2) {
     iDateDiff,
     iAdjust = 0;
 
-  if (dDate2 < dDate1) return -1; // error code if dates transposed
+  if (dDate2 < dDate1) return 0; // error code if dates transposed
 
   var iWeekday1 = dDate1.getDay(); // day of week
   var iWeekday2 = dDate2.getDay();
@@ -139,33 +141,32 @@ function calcBusinessDays(dDate1, dDate2) {
   }
 
   iDateDiff -= iAdjust; // take into account both days on weekend
-
-  return iDateDiff + 1; // add 1 because dates are inclusive
+  return iDateDiff;
 }
 
 function findEarliestDate(dateArray, startDate) {
-  var minIdx = 0,
+  let minIdx = 0,
     maxIdx = 0;
   for (var i = 0; i < dateArray.length; i++) {
     if (
-      isValidDate(dateArray[i]["In Progress"]) &&
-      isValidDate(dateArray[minIdx]["In Progress"])
+      isValidDate(dateArray[i]["New"]) &&
+      isValidDate(dateArray[minIdx]["New"])
     ) {
-      if (dateArray[i]["In Progress"] > dateArray[maxIdx]["In Progress"])
+      if (dateArray[i]["New"] > dateArray[maxIdx]["New"])
         maxIdx = i;
-      if (dateArray[i]["In Progress"] < dateArray[minIdx]["In Progress"])
+      if (dateArray[i]["New"] < dateArray[minIdx]["New"])
         minIdx = i;
     }
     if (
-      isValidDate(dateArray[i]["In Progress"]) &&
-      isValidDate(dateArray[minIdx]["In Progress"]) == false
+      isValidDate(dateArray[i]["New"]) &&
+      isValidDate(dateArray[minIdx]["New"]) == false
     )
       minIdx = i;
   }
-  if (!startDate && isValidDate(dateArray[minIdx]["In Progress"])) {
-    return new Date(dateArray[minIdx]["In Progress"]);
-  } else if (!startDate && isValidDate(dateArray[minIdx][createdDate])) {
+  if (!startDate && isValidDate(dateArray[minIdx][createdDate])) {
     return new Date(dateArray[minIdx][createdDate]);
+  } else if (!startDate && isValidDate(dateArray[minIdx]["New"])) {
+    return new Date(dateArray[minIdx]["New"]);
   } else {
     return startDate;
   }
@@ -181,8 +182,8 @@ function isValidDate(date) {
 
 function createDateArray(array, today, minimum, backlogOverride) {
   var graphXAxisNum =
-    Math.floor(today.getTime() - minimum.getTime()) / 86400000;
-  console.log(minimum);
+    //add 1 day or else graph ends on day before "today"
+    Math.floor(addDays(today, 1).getTime() - minimum.getTime()) / 86400000;
   var xaxis = [];
   for (var j = 0; j < graphXAxisNum; j++) {
     let day = {
@@ -211,7 +212,9 @@ function getBacklogAndWorkDone(date, array, key) {
   let count = 0;
   for (var j = 0; j < array.length; j++) {
     if (isValidDate(date) && isValidDate(array[j][key])) {
-      if (date.getTime() > array[j][key].getTime()) {
+      // call setHours to take the time out of the comparison
+      if (date.setHours(0, 0, 0, 0) >= array[j][key].setHours(0, 0, 0, 0)) {
+        // Date equals today's date
         count++;
       }
     }
@@ -295,99 +298,67 @@ function median(numbers) {
 //TODO: Make it so last 11 tickets respect start date
 function lastElevenTickets(array, today, startDate) {
   var temp = array.slice().sort((a, b) => b["Merged"] - a["Merged"]);
-
   let l = 0;
-  let testarr = [];
+  let mostRecentElevenTicketsArray = [];
 
   for (var k = 0; k < temp.length; k++) {
-    if (l >= 110) break;
+    if (l >= 11) break;
     if (
       isValidDate(temp[k]["Merged"]) &&
       temp[k]["Merged"] < today &&
       temp[k]["Lead Time"] < leadTimeMaxValue &&
       temp[k]["Merged"] > startDate
     ) {
-      testarr.push(temp[k]);
+      mostRecentElevenTicketsArray.push(temp[k]);
       l = l + 1;
     }
   }
-  //mostRecentElevenTicketsArray = testarr
-  return testarr;
+  return mostRecentElevenTicketsArray;
 }
 
-function workInParrallel(array, today, workInParrallelOverride) {
-  if (workInParrallelOverride) {
-    return workInParrallelOverride;
+function workInParallel(formattedData, today, startDate, workInParallelOverride) {
+  if (workInParallelOverride) {
+    return workInParallelOverride;
   } else {
-    let dateRange = [];
-    const lastDay = {
-      date: today,
-      in_progress: false,
-      merged: false,
-      last_day: true,
-    };
-    for (var i = 0; i < array.length; i++) {
+    if (!startDate) startDate = findEarliestDate(formattedData);
+    let lastElevenCompletedTickets = lastElevenTickets(formattedData, today, startDate)
+    let newData = formattedData.map((datastring) => {
+      datastring.leadTime = null; //calcBusinessDays(new Date(datastring['In Progress']), new Date(datastring['Merged']));
+      datastring["In Progress"] = new Date(datastring["In Progress"]);
+      datastring[createdDate] = new Date(datastring[createdDate]);
+      datastring["Merged"] = new Date(new Date(datastring["Merged"]).setHours(0, 0, 0, 0));
+      datastring["Closed"] = new Date(datastring["Closed"]);
+      datastring["New"] = new Date(new Date(datastring["New"]).setHours(0, 0, 0, 0));
+      return datastring;
+    });
+    let inProgressLeadTimeArr = [];
+    for (var i = 0; i < newData.length; i++) {
+      //In progress
       if (
-        isValidDate(array[i]["In Progress"]) &&
-        isValidDate(array[i]["Merged"])
+        (newData[i].Merged > today &&
+        newData[i]["New"] > startDate) ||
+        (!isValidDate(newData[i].Merged) &&
+        isValidDate(newData[i]["New"]) &&
+        newData[i]["New"] > startDate
+        )
       ) {
-        const toadd = [
-          {
-            date: array[i]["In Progress"],
-            in_progress: true,
-            merged: false,
-            last_day: false,
-          },
-          {
-            date: array[i]["Merged"],
-            in_progress: false,
-            merged: true,
-            last_day: false,
-          },
-        ];
-        dateRange = dateRange.concat(toadd);
+        inProgressLeadTimeArr.push(calcBusinessDays(new Date(newData[i]["New"]),new Date(today)))
       }
-      if (
-        isValidDate(array[i]["In Progress"]) &&
-        !isValidDate(array[i]["Merged"])
-      ) {
-        dateRange = dateRange.concat({
-          date: array[i]["In Progress"],
-          in_progress: true,
-          merged: false,
-          last_day: false,
-        });
-      }
-      if (array[i]["In Progress"] >= today) break;
     }
-    dateRange = dateRange.concat(lastDay);
-    //[0] earliest date -> [n] last date
-    var filteredDateRange = dateRange.slice().sort((a, b) => a.date - b.date);
-    let multiplyer = 1;
+    let inProgressLeadTime = inProgressLeadTimeArr.reduce((a, b) => a + b, 0)
     let sum = 0;
-    for (var j = 0; j < filteredDateRange.length - 1; j++) {
-      sum =
-        sum +
-        (filteredDateRange[j + 1].date.getTime() -
-          filteredDateRange[j].date.getTime()) *
-        multiplyer;
-      if (filteredDateRange[j + 1].in_progress) {
-        multiplyer++;
-      }
-      if (filteredDateRange[j + 1].merged) {
-        multiplyer--;
-      }
-      if (filteredDateRange[j + 1].last_day) {
-        break;
-      }
+    for (var k = 0; k < lastElevenCompletedTickets.length; k++) {
+      sum = sum + lastElevenCompletedTickets[k]["Lead Time"]
     }
-    let total = today.getTime() - filteredDateRange[0].date.getTime();
-    let workInParrallelValue = sum / total;
+    console.log(startDate)
+    let total = calcBusinessDays(startDate, today);
+    let workInParallelValue = (sum + inProgressLeadTime) / total;
+    if (workInParallelValue < 0.7) workInParallelValue = 0.7;
 
-    if (isNaN(workInParrallelValue)) {
-      return 0.8;
+    if (isNaN(workInParallelValue)) {
+      return 0.7;
     } else {
-      return workInParrallelValue;
+      return workInParallelValue;
     }
   }
 }
@@ -445,6 +416,7 @@ function randNumFromDistribution(rangeObject, distributionType) {
     } else {
       return null;
     }
+    //TODO account for weekends in returned values
   };
 
   // Create n samples between min and max
@@ -459,20 +431,13 @@ function monteCarlo(
   dates,
   randomNumsLeadTime,
   randomNumsWorkAdded,
-  today,
-  formattedData,
-  startDate,
-  workInParrallelOverride
+  workInParallelValue
 ) {
   let workLeft =
     dates[dates.length - 1].Backlog - dates[dates.length - 1].Work_Done;
   let adjustedWorkLeft =
     workLeft /
-    workInParrallel(
-      lastElevenTickets(formattedData, today, startDate),
-      today,
-      workInParrallelOverride
-    );
+    workInParallelValue
   let sum =
     randomNumsLeadTime[Math.floor(Math.random() * randomNumsLeadTime.length)] *
     adjustedWorkLeft;
@@ -486,10 +451,7 @@ function runMonteCarlo(
   dates,
   randomNumsLeadTime,
   randomNumsWorkAdded,
-  today,
-  formattedData,
-  startDate,
-  workInParrallelOverride
+  workInParallelValue
 ) {
   let runArray = [];
   for (let i = 0; i < n; i++) {
@@ -498,21 +460,14 @@ function runMonteCarlo(
         dates,
         randomNumsLeadTime,
         randomNumsWorkAdded,
-        today,
-        formattedData,
-        startDate,
-        workInParrallelOverride
+        workInParallelValue
       )
     );
   }
   let monteCarloResults = {
     daysToCompletionArray: runArray,
     finalDistributionValuies: computeMeanSdAndItervalRangeMinMax(runArray),
-    workInParrallelValue: workInParrallel(
-      lastElevenTickets(formattedData, today, startDate),
-      today,
-      workInParrallelOverride
-    ),
+    workInParallelValue: workInParallelValue,
     randomWorkAdded: computeMeanSdAndItervalRangeMinMax(randomNumsWorkAdded),
     confidence: getConfidence(runArray),
     bestAndWorstCaseForPlotObject: bestAndWorstCaseForPlot(
@@ -742,8 +697,9 @@ export function monteCarloFunction(props) {
   console.log(props);
   let today = new Date(props.data.simulationDate);
   const distType = props.data.distribution;
+  //.replace(/-/g, '\/') exists to handle time change, see https://stackoverflow.com/questions/8215556/how-to-check-if-input-date-is-equal-to-todays-date
   let startDate =
-    props.data.startDate == null ? false : new Date(props.data.startDate);
+    props.data.startDate == null ? false : new Date(props.data.startDate.replace(/-/g, '/'));
   //set lead time max value
   props.data.leadTimeMaxValueOverride
     ? (leadTimeMaxValue = props.data.leadTimeMaxValueOverride)
@@ -772,6 +728,7 @@ export function monteCarloFunction(props) {
   const randWorkadded = computeMeanSdAndItervalRangeMinMax(
     randNumFromDistribution(workAdded)
   );
+  const workInParallelValue = workInParallel(formattedData, today, startDate, props.data.workInParallelOverride)
   let myBoyMonte = runMonteCarlo(
     10000,
     forplot,
@@ -780,13 +737,10 @@ export function monteCarloFunction(props) {
       distType
     ),
     forplot.map((o) => o.Work_Added),
-    today,
-    formattedData,
-    findEarliestDate(formattedData, startDate),
-    props.data.workInParrallelOverride
+    workInParallelValue
   );
+  console.log(myBoyMonte)
   let plotdata = [];
-  console.log(myBoyMonte.bestAndWorstCaseForPlotObject)
   for (let i = 0; i < forplot.map((o) => o.Day).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map((o) => o.day).slice(1)).length; i++) {
     plotdata.push({
       days: forplot

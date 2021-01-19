@@ -152,8 +152,8 @@ export default function Dashboard() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const [simulationDate, setSimulationDate] = useState(
     new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .split("T")[0]
+  .toISOString()
+  .split("T")[0]
   );
   const [csvFile, setCsvFile] = useState();
   const [startDate, setStartDate] = useState();
@@ -176,7 +176,7 @@ export default function Dashboard() {
       monteCarloFunction({
         data: {
           data: result.data,
-          simulationDate: simulationDate,
+          simulationDate: simulationDate.replace(/-/g, '/'),
           startDate: startDate,
           distribution: dist,
           leadTimeOverride: leadTimeOverride,
@@ -196,7 +196,7 @@ export default function Dashboard() {
     setDist(event.target.value);
   };
 
-  console.log(leadTimeMaxValueOverride);
+  console.log(simulationDate)
 
   return (
     <div className={classes.root}>
@@ -259,7 +259,7 @@ export default function Dashboard() {
             id="date"
             label="Simulation Start Date (today)"
             type="date"
-            defaultValue={simulationDate}
+            value={simulationDate}
             onChange={handleSimulationStartDateChange}
             className={classes.textField}
             InputLabelProps={{

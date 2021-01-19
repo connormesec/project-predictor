@@ -25,7 +25,7 @@ function MonteCarloConfidenceValues(props) {
       <p>Mode: {props.data.monte.finalDistributionValuies.mode}</p>
       <p>
         Work in parallel value:{" "}
-        {Math.round(props.data.monte.workInParrallelValue * 100) / 100}
+        {Math.round(props.data.monte.workInParallelValue * 100) / 100}
       </p>
     </div>
   );
