@@ -1,20 +1,22 @@
 import skewnorm from "skew-normal-random";
 import random from "random";
+import jsrand from "jsrand";
 
 var createdDate = "Created";
+let ticketStartedCol;
 let leadTimeMaxValue;
 
 function dateChange(data) {
   let data3 = data.map((datastring) => {
     datastring["Lead Time"] = calcBusinessDays(
-      new Date(datastring["New"]),
+      new Date(datastring[ticketStartedCol]),
       new Date(datastring["Merged"])
     );
     datastring["In Progress"] = new Date(datastring["In Progress"]);
     datastring[createdDate] = new Date(datastring[createdDate]);
     datastring["Merged"] = new Date(datastring["Merged"]);
     //datastring["Closed"] = new Date(datastring["Closed"]);
-    datastring["New"] = new Date(datastring["New"]);
+    datastring[ticketStartedCol] = new Date(datastring[ticketStartedCol]);
     return datastring;
   });
   return data3;
@@ -24,9 +26,7 @@ function removeNotWorkedTickets(data) {
   let newArr = [];
   for (var i = 0; i < data.length; i++) {
     if (
-      !(isValidDate(data[i].New && data[i].Status === "Closed") && !isValidDate(data[i].Merged))
-      // !isValidDate(data[i].New) ||
-      // (isValidDate(data[i].New) && isValidDate(data[i].Merged))
+      !(isValidDate(data[i][ticketStartedCol] && data[i].Status === "Closed") && !isValidDate(data[i].Merged))
     ) {
       newArr.push(data[i]);
     }
@@ -139,8 +139,8 @@ function calcBusinessDays(dDate1, dDate2) {
   } else {
     iDateDiff = (iWeeks + 1) * 5 - (iWeekday1 - iWeekday2);
   }
-
   iDateDiff -= iAdjust; // take into account both days on weekend
+  if (iDateDiff < 1) iDateDiff = 1;
   return iDateDiff;
 }
 
@@ -149,24 +149,24 @@ function findEarliestDate(dateArray, startDate) {
     maxIdx = 0;
   for (var i = 0; i < dateArray.length; i++) {
     if (
-      isValidDate(dateArray[i]["New"]) &&
-      isValidDate(dateArray[minIdx]["New"])
+      isValidDate(dateArray[i][ticketStartedCol]) &&
+      isValidDate(dateArray[minIdx][ticketStartedCol])
     ) {
-      if (dateArray[i]["New"] > dateArray[maxIdx]["New"])
+      if (dateArray[i][ticketStartedCol] > dateArray[maxIdx][ticketStartedCol])
         maxIdx = i;
-      if (dateArray[i]["New"] < dateArray[minIdx]["New"])
+      if (dateArray[i][ticketStartedCol] < dateArray[minIdx][ticketStartedCol])
         minIdx = i;
     }
     if (
-      isValidDate(dateArray[i]["New"]) &&
-      isValidDate(dateArray[minIdx]["New"]) == false
+      isValidDate(dateArray[i][ticketStartedCol]) &&
+      isValidDate(dateArray[minIdx][ticketStartedCol]) == false
     )
       minIdx = i;
   }
   if (!startDate && isValidDate(dateArray[minIdx][createdDate])) {
     return new Date(dateArray[minIdx][createdDate]);
-  } else if (!startDate && isValidDate(dateArray[minIdx]["New"])) {
-    return new Date(dateArray[minIdx]["New"]);
+  } else if (!startDate && isValidDate(dateArray[minIdx][ticketStartedCol])) {
+    return new Date(dateArray[minIdx][ticketStartedCol]);
   } else {
     return startDate;
   }
@@ -182,7 +182,6 @@ function isValidDate(date) {
 
 function createDateArray(array, today, minimum, backlogOverride) {
   var graphXAxisNum =
-    //add 1 day or else graph ends on day before "today"
     Math.floor(addDays(today, 1).getTime() - minimum.getTime()) / 86400000;
   var xaxis = [];
   for (var j = 0; j < graphXAxisNum; j++) {
@@ -227,6 +226,7 @@ function computeMeanSdAndItervalRangeMinMax(list) {
   const mean = list.reduce((a, b) => a + b, 0) / list.length;
   const sumMinusMean = list.reduce((a, b) => a + (b - mean) * (b - mean), 0);
   const logNorm = list.map((x) => Math.log(x));
+  const shapeScale = getShapeAndScaleFromDataArray(list)
 
   return {
     mean: mean,
@@ -237,6 +237,8 @@ function computeMeanSdAndItervalRangeMinMax(list) {
     best_case: mean - 2 * Math.sqrt(sumMinusMean / (list.length - 1)),
     worst_case: mean + 2 * Math.sqrt(sumMinusMean / (list.length - 1)),
     logNormal: logNorm,
+    list: list,
+    shapeScale: shapeScale
   };
 }
 
@@ -320,39 +322,14 @@ function workInParallel(formattedData, today, startDate, workInParallelOverride)
   if (workInParallelOverride) {
     return workInParallelOverride;
   } else {
-    if (!startDate) startDate = findEarliestDate(formattedData);
+    //if (!startDate) startDate = findEarliestDate(lastElevenTickets(formattedData, today, startDate));
     let lastElevenCompletedTickets = lastElevenTickets(formattedData, today, startDate)
-    let newData = formattedData.map((datastring) => {
-      datastring.leadTime = null; //calcBusinessDays(new Date(datastring['In Progress']), new Date(datastring['Merged']));
-      datastring["In Progress"] = new Date(datastring["In Progress"]);
-      datastring[createdDate] = new Date(datastring[createdDate]);
-      datastring["Merged"] = new Date(new Date(datastring["Merged"]).setHours(0, 0, 0, 0));
-      datastring["Closed"] = new Date(datastring["Closed"]);
-      datastring["New"] = new Date(new Date(datastring["New"]).setHours(0, 0, 0, 0));
-      return datastring;
-    });
-    let inProgressLeadTimeArr = [];
-    for (var i = 0; i < newData.length; i++) {
-      //In progress
-      if (
-        (newData[i].Merged > today &&
-        newData[i]["New"] > startDate) ||
-        (!isValidDate(newData[i].Merged) &&
-        isValidDate(newData[i]["New"]) &&
-        newData[i]["New"] > startDate
-        )
-      ) {
-        inProgressLeadTimeArr.push(calcBusinessDays(new Date(newData[i]["New"]),new Date(today)))
-      }
-    }
-    let inProgressLeadTime = inProgressLeadTimeArr.reduce((a, b) => a + b, 0)
     let sum = 0;
     for (var k = 0; k < lastElevenCompletedTickets.length; k++) {
       sum = sum + lastElevenCompletedTickets[k]["Lead Time"]
     }
-    console.log(startDate)
     let total = calcBusinessDays(startDate, today);
-    let workInParallelValue = (sum + inProgressLeadTime) / total;
+    let workInParallelValue = sum / total;
     if (workInParallelValue < 0.7) workInParallelValue = 0.7;
 
     if (isNaN(workInParallelValue)) {
@@ -367,7 +344,10 @@ function randNumFromDistribution(rangeObject, distributionType) {
   let n = 10000;
   let temparray = [];
   let logNorm = computeMeanSdAndItervalRangeMinMax(rangeObject.logNormal);
-
+  //for weibull
+  let shapeScaleParams = getShapeAndScaleFromDataArray(rangeObject.list);
+  let scale = shapeScaleParams.estimatedScale;
+  let shape = shapeScaleParams.estimatedShape;
   const randn_bm = () => {
     var u = 0,
       v = 0;
@@ -407,13 +387,22 @@ function randNumFromDistribution(rangeObject, distributionType) {
       return num;
     }
 
+    function randomWeibull() {
+      let num = jsrand.weibull(shape,scale);
+      if (num > leadTimeMaxValue) return randn_bm();
+      return num;
+    }
+
     if (distributionType == "Skew-Normal") {
       return randomSkewNormal(α, ξ, ω);
     } else if (distributionType == "Normal") {
       return randomNormal(mean, ω, med);
     } else if (distributionType == "Log-Normal") {
       return randomLogNormal();
-    } else {
+    } else if (distributionType == "Weibull") {
+      return randomWeibull();
+    } 
+    else {
       return null;
     }
     //TODO account for weekends in returned values
@@ -425,6 +414,50 @@ function randNumFromDistribution(rangeObject, distributionType) {
     temparray.push(rand_num);
   }
   return temparray;
+}
+
+function getShapeAndScaleFromDataArray(dataArray) {
+  let estimatedShape = computeShape(dataArray);
+  let estimatedScale = computeScale(dataArray, estimatedShape)
+  function getShape(p1, p2, p1Result, p2Result) {
+    return (Math.log(-Math.log(1 - p2)) - Math.log(-Math.log(1 - p1))) / (Math.log(p2Result) - Math.log(p1Result))
+  }
+  function getScale(p1, p1Result, shape) {
+    return p1Result / (Math.pow((-Math.log(1 - p1)), (1 / shape)));
+  }
+  function computeShape(dataArray) {
+    var shape = 1.0
+
+    var sampleDataArray = dataArray;
+
+    shape = getShape(0.3, 0.7, quantile(sampleDataArray, 0.3), quantile(sampleDataArray, 0.7));
+
+    return shape;
+  }
+  function computeScale(dataArray, EstimatedShape) {
+    var scale = 1.0
+
+    var sampleDataArray = dataArray;
+
+    scale = getScale(0.3, quantile(sampleDataArray, 0.3), EstimatedShape);
+
+    return scale;
+  }
+
+  function quantile(data, q) {
+    var pos = ((data.length) - 1) * q;
+    var base = Math.floor(pos);
+    var rest = pos - base;
+    if ((data[base + 1] !== undefined)) {
+      return data[base] + rest * (data[base + 1] - data[base]);
+    } else {
+      return data[base];
+    }
+  }
+  return {
+      estimatedShape : estimatedShape,
+      estimatedScale : estimatedScale
+  }
 }
 
 function monteCarlo(
@@ -551,7 +584,7 @@ function bestAndWorstCaseForPlot(
   //TODO: get average work added to not always be 0 
   let averageWorkAdded = 0 //randomWorkAdded.median;
   let resultArray = [];
-  for (let i = 0; i < worstCaseDays; i++) {
+  for (let i = 0; i < ninetyPercent; i++) {
     const date = new Date((i + lastDay) * 86400000),
       bckLgInc = averageWorkAdded * i + lastDayBacklogTotal,
       doneWC =
@@ -697,25 +730,27 @@ export function monteCarloFunction(props) {
   console.log(props);
   let today = new Date(props.data.simulationDate);
   const distType = props.data.distribution;
-  //.replace(/-/g, '\/') exists to handle time change, see https://stackoverflow.com/questions/8215556/how-to-check-if-input-date-is-equal-to-todays-date
-  let startDate =
-    props.data.startDate == null ? false : new Date(props.data.startDate.replace(/-/g, '/'));
+ 
   //set lead time max value
   props.data.leadTimeMaxValueOverride
     ? (leadTimeMaxValue = props.data.leadTimeMaxValueOverride)
     : (leadTimeMaxValue = 10000);
+  props.data.ticketStartedCol || props.data.ticketStartedCol == "" ? ticketStartedCol = props.data.ticketStartedCol : ticketStartedCol = "New";
   const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
+   //.replace(/-/g, '\/') exists to handle time change, see https://stackoverflow.com/questions/8215556/how-to-check-if-input-date-is-equal-to-todays-date
+   let startDate =
+   props.data.startDate == null || props.data.startDate == "" ? findEarliestDate(formattedData, false) : new Date(props.data.startDate.replace(/-/g, '/'));
   const leadTimeLastEleven = props.data.leadTimeOverride
     ? props.data.leadTimeOverride.split(",").map((x) => x * 1)
     : lastElevenTickets(
       formattedData,
       today,
-      findEarliestDate(formattedData, startDate)
+      startDate
     ).map((o) => o["Lead Time"]);
   let forplot = createDateArray(
     formattedData,
     today,
-    findEarliestDate(formattedData, startDate),
+    startDate,
     props.data.backlogOverride
   );
   const lastElevenData = computeMeanSdAndItervalRangeMinMax(leadTimeLastEleven);
@@ -755,11 +790,6 @@ export function monteCarloFunction(props) {
         .concat(
           myBoyMonte.bestAndWorstCaseForPlotObject.map((o) => o.backlogIncrease)
         )[i],
-      worstCase: new Array(forplot.map((o) => o.Day).length - 1)
-        .fill(undefined)
-        .concat(
-          myBoyMonte.bestAndWorstCaseForPlotObject.map((o) => o.doneWorstCase)
-        )[i],
       confidence25: new Array(forplot.map((o) => o.Day).length - 1)
         .fill(undefined)
         .concat(
@@ -780,14 +810,8 @@ export function monteCarloFunction(props) {
         .concat(
           myBoyMonte.bestAndWorstCaseForPlotObject.map((o) => o.confidence90)
         )[i],
-      confidence95: new Array(forplot.map((o) => o.Day).length - 1)
-        .fill(undefined)
-        .concat(
-          myBoyMonte.bestAndWorstCaseForPlotObject.map((o) => o.confidence95)
-        )[i],
     });
   }
-  console.log(plotdata)
   return {
     monte: myBoyMonte,
     plotData: plotdata,

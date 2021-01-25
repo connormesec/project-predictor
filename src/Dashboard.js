@@ -162,8 +162,9 @@ export default function Dashboard() {
   const [monteResults, setMonteResults] = useState();
   const [leadTimeOverride, setLeadTimeOverride] = useState();
   const [backlogOverride, setBackLogOverride] = useState();
-  const [workInParrallelOverride, setWorkInParrallelOverride] = useState();
+  const [workInParallelOverride, setWorkInParallelOverride] = useState();
   const [leadTimeMaxValueOverride, setLeadTimeMaxValueOverride] = useState();
+  const [ticketStartedCol, setTicketStartedCol] = useState();
   const handleChange = (event) => setCsvFile(event.target.files[0]);
   const handleSimulationStartDateChange = (event) =>
     setSimulationDate(event.target.value);
@@ -181,8 +182,9 @@ export default function Dashboard() {
           distribution: dist,
           leadTimeOverride: leadTimeOverride,
           backlogOverride: backlogOverride,
-          workInParrallelOverride: workInParrallelOverride,
+          workInParallelOverride: workInParallelOverride,
           leadTimeMaxValueOverride: leadTimeMaxValueOverride,
+          ticketStartedCol: ticketStartedCol
         },
       })
     );
@@ -279,11 +281,19 @@ export default function Dashboard() {
               <MenuItem value={"Normal"}>Normal</MenuItem>
               <MenuItem value={"Skew-Normal"}>Skew-Normal</MenuItem>
               <MenuItem value={"Log-Normal"}>Log-Normal</MenuItem>
+              <MenuItem value={"Weibull"}>Weibull</MenuItem>
             </Select>
           </FormControl>
         </div>
         <Divider className={classes.textField} />
         <div className={classes.drawerLowerContainer}>
+        <TextField
+            id="outlined-basic"
+            label="Start Column"
+            variant="outlined"
+            onChange={(event) => setTicketStartedCol(event.target.value)}
+            className={classes.overrideField}
+          />
           <TextField
             id="date"
             label="Project Start Date"
@@ -321,7 +331,7 @@ export default function Dashboard() {
             id="outlined-basic"
             label="Work In Parallel"
             variant="outlined"
-            onChange={(event) => setWorkInParrallelOverride(event.target.value)}
+            onChange={(event) => setWorkInParallelOverride(event.target.value)}
             className={classes.overrideField}
           />
           <TextField

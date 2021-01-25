@@ -33,22 +33,6 @@ function CumulativeFlowDiagram(props) {
         },
         {
           x: props.data.plotData.map((o) => o.days),
-          y: props.data.plotData.map((o) => o.worstCase),
-          name: "99% Confidence",
-          type: "scatter",
-          mode: "lines",
-          marker: { color: "red" },
-        },
-        {
-          x: props.data.plotData.map((o) => o.days),
-          y: props.data.plotData.map((o) => o.confidence95),
-          name: "95% Confidence",
-          type: "scatter",
-          mode: "lines",
-          marker: { color: "#FF4E11" },
-        },
-        {
-          x: props.data.plotData.map((o) => o.days),
           y: props.data.plotData.map((o) => o.confidence90),
           name: "90% Confidence",
           type: "scatter",
