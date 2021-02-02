@@ -48,7 +48,7 @@ function Documentation() {
         encompasses the tickets in the project to be simulated. For example if
         you want to simulate Project A and all of the tickets associated with
         Project A are in the epic PROJ-123, then you would set the dropdown to
-        "Cusom JQL" and in the text field enter "Epic Link" = PROJ-123.
+        "Custom JQL" and in the text field enter "Epic Link" = PROJ-123.
       </Typography>
       <Typography variant="body1" align="left" className={classes.sublist}>
         c. Set the "Columns By" dropdown to "Last Transition From Status Date"
@@ -130,10 +130,13 @@ function Documentation() {
         <b>Backlog:</b> Defaults to total tickets minus completed tickets. Use this if you want to manually set how many tickets are in the backlog. For example, if you have a project with a backlog of 20 tickets and want to see how the estimated completion date might change if 10 more tickets were added, then you would put 30 in the override field.
       </Typography>
       <Typography variant="body1" align="left" className={classes.body}>
-        <b>Work In Parallel:</b> Override this if you want to see how the simulation would change if more developers were added or taken away from the project. In theory two developers should have a work in parallel value of two but in practice each developer tend to add 0.8 to the work in parallel value. For example if you have a project with two developers working on it with a work in parrallel value of 1.3 and you want to see how the estimated completion dates will change if another is added then you would add 0.8 to your work in parallel value and input 2.1 in the override field.
+        <b>Work In Parallel:</b> Override this if you want to see how the simulation would change if more developers were added or taken away from the project. In theory two developers should have a work in parallel value of two but in practice each developer tend to add 0.8 to the work in parallel value. For example if you have a project with two developers working on it with a work in parallel value of 1.3 and you want to see how the estimated completion dates will change if another is added then you would add 0.8 to your work in parallel value and input 2.1 in the override field.
       </Typography>
       <Typography variant="body1" align="left" className={classes.body}>
-        <b>Lead Time Max Value:</b> If you want to remove lead time outliers above a certain threshold use this field. This is useful for lognormal and Weibull distributions as their ditributions are based on logarithms and result in some very pessimistic results if this field is not used. For example, if you wanted to get a more accurate prediction and you know that you had a ticket with a lead time of 22 days you could set the override to 15 and the outlier would not be factored into the simulation.
+        <b>Lead Time Max Value:</b> If you want to remove lead time outliers above a certain threshold use this field. This is useful for lognormal and Weibull distributions as their distributions are based on logarithms and result in some very pessimistic results if this field is not used. For example, if you wanted to get a more accurate prediction and you know that you had a ticket with a lead time of 22 days you could set the override to 15 and the outlier would not be factored into the simulation.
+      </Typography>
+      <Typography variant="h6" className={classes.title}>
+        This code is available on <a href="https://github.com/connormesec/project-predictor">Github</a>
       </Typography>
     </div>
   );
