@@ -26,7 +26,7 @@ function removeNotWorkedTickets(data) {
   let newArr = [];
   for (var i = 0; i < data.length; i++) {
     if (
-      !(isValidDate(data[i][ticketStartedCol] && data[i].Status === "Closed") && !isValidDate(data[i].Merged))
+      !(isValidDate(data[i][ticketStartedCol]) && (data[i].Status === "Closed" || data[i].Status === "Completed") && !isValidDate(data[i].Merged)) && !RegExp('post_prod', 'g').test(data[i].Labels)
     ) {
       newArr.push(data[i]);
     }
@@ -41,7 +41,7 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
     datastring[createdDate] = new Date(datastring[createdDate]);
     datastring["Merged"] = new Date(new Date(datastring["Merged"]).setHours(0, 0, 0, 0));
     datastring["Closed"] = new Date(datastring["Closed"]);
-    datastring["New"] = new Date(new Date(datastring["New"]).setHours(0, 0, 0, 0));
+    datastring[ticketStartedCol] = new Date(new Date(datastring[ticketStartedCol]).setHours(0, 0, 0, 0));
     datastring.alert = "";
     datastring.alertCount = 0;
     return datastring;
@@ -51,14 +51,15 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
     //In progress
     if (
       !isValidDate(newData[i].Merged) &&
-      isValidDate(newData[i]["New"]) &&
+      isValidDate(newData[i][ticketStartedCol]) &&
       newData[i].Status !== "New" &&
       newData[i].Status !== "Closed" &&
       newData[i].Status !== "Resolved" &&
-      newData[i].Status !== "Complete"
+      newData[i].Status !== "Complete" &&
+      newData[i].Status !== "Completed" 
     ) {
       newData[i].leadTime = calcBusinessDays(
-        new Date(newData[i]["New"]),
+        new Date(newData[i][ticketStartedCol]),
         new Date(today)
       );
       newData[i].Status = "In Progress";
@@ -79,10 +80,10 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
     //Complete
     else if (
       isValidDate(newData[i].Merged) &&
-      isValidDate(newData[i]["New"])
+      isValidDate(newData[i][ticketStartedCol])
     ) {
       newData[i].leadTime = calcBusinessDays(
-        new Date(newData[i]["New"]),
+        new Date(newData[i][ticketStartedCol]),
         new Date(newData[i].Merged)
       );
       newData[i].Status = "Complete";
@@ -90,15 +91,11 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
         newData[i].alert += " NEEDS RELEASE NOTES ";
         newData[i].alertCount++;
       }
-      if (newData[i]["Effort Points"] === "-") {
-        newData[i].alert += " NO EFFORT POINTS ";
-        newData[i].alertCount++;
-      }
       newArr.push(newData[i]);
     }
 
     //New
-    else if (newData[i].Status === "New") {
+    else if (newData[i].Status === ticketStartedCol) {
       if (newData[i]["Effort Points"] === "-") {
         newData[i].alert += " NO EFFORT POINTS ";
         newData[i].alertCount++;
@@ -322,18 +319,19 @@ function workInParallel(formattedData, today, startDate, workInParallelOverride)
   if (workInParallelOverride) {
     return workInParallelOverride;
   } else {
-    //if (!startDate) startDate = findEarliestDate(lastElevenTickets(formattedData, today, startDate));
     let lastElevenCompletedTickets = lastElevenTickets(formattedData, today, startDate)
+    let lastDay = lastElevenCompletedTickets[0][ticketStartedCol]
+    let firstDay = lastElevenCompletedTickets[lastElevenCompletedTickets.length - 1].Merged
     let sum = 0;
     for (var k = 0; k < lastElevenCompletedTickets.length; k++) {
       sum = sum + lastElevenCompletedTickets[k]["Lead Time"]
     }
-    let total = calcBusinessDays(startDate, today);
+    let total = calcBusinessDays(firstDay, lastDay);
     let workInParallelValue = sum / total;
     if (workInParallelValue < 0.7) workInParallelValue = 0.7;
 
     if (isNaN(workInParallelValue)) {
-      return 0.7;
+      return 0.8;
     } else {
       return workInParallelValue;
     }
@@ -737,6 +735,7 @@ export function monteCarloFunction(props) {
     : (leadTimeMaxValue = 10000);
   props.data.ticketStartedCol || props.data.ticketStartedCol == "" ? ticketStartedCol = props.data.ticketStartedCol : ticketStartedCol = "New";
   const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
+  console.log(formattedData)
    //.replace(/-/g, '\/') exists to handle time change, see https://stackoverflow.com/questions/8215556/how-to-check-if-input-date-is-equal-to-todays-date
    let startDate =
    props.data.startDate == null || props.data.startDate == "" ? findEarliestDate(formattedData, false) : new Date(props.data.startDate.replace(/-/g, '/'));

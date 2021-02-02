@@ -28,7 +28,7 @@ import { Input } from "@material-ui/core";
 import LeadTimeFrequencyDiagram from "./LeadTimeFrequencyDiagram";
 import LeadTimeConfidenceValues from "./LeadTimeConfidenceValues";
 import LeadTimeRandomFrequencyDiagram from "./LeadTimeRandomFrequencyDiagram";
-
+import Documentation from "./Documentation";
 const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
-    height: "30%",
+    height: "25%",
   },
   drawerLowerContainer: {
     padding: theme.spacing(2),
@@ -107,7 +107,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     height: "45%",
   },
-  appBarSpacer: theme.mixins.toolbar,
+  appBarSpacer: {
+    height: "10%",  
+    ...theme.mixins.toolbar,
+  },
   content: {
     flexGrow: 1,
     height: "100vh",
@@ -128,6 +131,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textField: {
     marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(1),
   },
   overrideField: {
     height: "91%",
@@ -158,7 +162,7 @@ export default function Dashboard() {
   const [csvFile, setCsvFile] = useState();
   const [startDate, setStartDate] = useState();
   const [data, setData] = useState();
-  const [dist, setDist] = useState("Normal");
+  const [dist, setDist] = useState("Weibull");
   const [monteResults, setMonteResults] = useState();
   const [leadTimeOverride, setLeadTimeOverride] = useState();
   const [backlogOverride, setBackLogOverride] = useState();
@@ -278,14 +282,18 @@ export default function Dashboard() {
               onChange={handleMenuChange}
               label="Distribution Type"
             >
+              <MenuItem value={"Weibull"}>Weibull</MenuItem>
               <MenuItem value={"Normal"}>Normal</MenuItem>
               <MenuItem value={"Skew-Normal"}>Skew-Normal</MenuItem>
               <MenuItem value={"Log-Normal"}>Log-Normal</MenuItem>
-              <MenuItem value={"Weibull"}>Weibull</MenuItem>
             </Select>
           </FormControl>
         </div>
+        
         <Divider className={classes.textField} />
+        <Typography variant="h6" className={classes.title}>
+      Override Options
+    </Typography>
         <div className={classes.drawerLowerContainer}>
         <TextField
             id="outlined-basic"
@@ -416,7 +424,9 @@ function Chartidge(props) {
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <p>Documentation</p>
+            <Paper className={classes.paper}>
+              <Documentation />
+            </Paper>
           </Grid>
         </Grid>
       </Container>
