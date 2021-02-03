@@ -320,8 +320,14 @@ function workInParallel(formattedData, today, startDate, workInParallelOverride)
     return workInParallelOverride;
   } else {
     let lastElevenCompletedTickets = lastElevenTickets(formattedData, today, startDate)
-    let lastDay = lastElevenCompletedTickets[0][ticketStartedCol]
-    let firstDay = lastElevenCompletedTickets[lastElevenCompletedTickets.length - 1].Merged
+    var earliestDate = lastElevenCompletedTickets.sort(function(a, b) {
+      return Date.parse(a[ticketStartedCol]) - Date.parse(b[ticketStartedCol]);
+    });
+    var latestDate = lastElevenCompletedTickets.sort(function(a, b) {
+      return Date.parse(a.Merged) - Date.parse(b.Merged);
+    });
+    let lastDay = latestDate[latestDate.length - 1].Merged
+    let firstDay = earliestDate[0][ticketStartedCol]
     let sum = 0;
     for (var k = 0; k < lastElevenCompletedTickets.length; k++) {
       sum = sum + lastElevenCompletedTickets[k]["Lead Time"]
