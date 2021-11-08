@@ -56,7 +56,7 @@ function leadTimeAndStatus(data, today, randLastElevenData) {
       newData[i].Status !== "Closed" &&
       newData[i].Status !== "Resolved" &&
       newData[i].Status !== "Complete" &&
-      newData[i].Status !== "Completed" 
+      newData[i].Status !== "Completed"
     ) {
       newData[i].leadTime = calcBusinessDays(
         new Date(newData[i][ticketStartedCol]),
@@ -319,28 +319,33 @@ function workInParallel(formattedData, today, startDate, workInParallelOverride)
   if (workInParallelOverride) {
     return workInParallelOverride;
   } else {
-    let lastElevenCompletedTickets = lastElevenTickets(formattedData, today, startDate)
-    var earliestDate = lastElevenCompletedTickets.sort(function(a, b) {
-      return Date.parse(a[ticketStartedCol]) - Date.parse(b[ticketStartedCol]);
-    });
-    var latestDate = lastElevenCompletedTickets.sort(function(a, b) {
-      return Date.parse(a.Merged) - Date.parse(b.Merged);
-    });
-    let lastDay = latestDate[latestDate.length - 1].Merged
-    let firstDay = earliestDate[0][ticketStartedCol]
-    let sum = 0;
-    for (var k = 0; k < lastElevenCompletedTickets.length; k++) {
-      sum = sum + lastElevenCompletedTickets[k]["Lead Time"]
-    }
-    let total = calcBusinessDays(firstDay, lastDay);
-    let workInParallelValue = sum / total;
-    if (workInParallelValue < 0.7) workInParallelValue = 0.7;
+    let lastElevenCompletedTickets = lastElevenTickets(formattedData, today, startDate);
+    if (lastElevenCompletedTickets.length !== 0) {
+      var earliestDate = lastElevenCompletedTickets.sort(function (a, b) {
+        return Date.parse(a[ticketStartedCol]) - Date.parse(b[ticketStartedCol]);
+      });
+      var latestDate = lastElevenCompletedTickets.sort(function (a, b) {
+        return Date.parse(a.Merged) - Date.parse(b.Merged);
+      });
+      let lastDay = latestDate[latestDate.length - 1].Merged
+      let firstDay = earliestDate[0][ticketStartedCol]
+      let sum = 0;
+      for (var k = 0; k < lastElevenCompletedTickets.length; k++) {
+        sum = sum + lastElevenCompletedTickets[k]["Lead Time"]
+      }
+      let total = calcBusinessDays(firstDay, lastDay);
+      let workInParallelValue = sum / total;
+      if (workInParallelValue < 0.7) workInParallelValue = 0.7;
 
-    if (isNaN(workInParallelValue)) {
-      return 0.8;
+      if (isNaN(workInParallelValue)) {
+        return 0.8;
+      } else {
+        return workInParallelValue;
+      }
     } else {
-      return workInParallelValue;
+      return 0.8;
     }
+
   }
 }
 
@@ -392,7 +397,7 @@ function randNumFromDistribution(rangeObject, distributionType) {
     }
 
     function randomWeibull() {
-      let num = jsrand.weibull(shape,scale);
+      let num = jsrand.weibull(shape, scale);
       if (num > leadTimeMaxValue) return randn_bm();
       return num;
     }
@@ -405,7 +410,7 @@ function randNumFromDistribution(rangeObject, distributionType) {
       return randomLogNormal();
     } else if (distributionType == "Weibull") {
       return randomWeibull();
-    } 
+    }
     else {
       return null;
     }
@@ -459,8 +464,8 @@ function getShapeAndScaleFromDataArray(dataArray) {
     }
   }
   return {
-      estimatedShape : estimatedShape,
-      estimatedScale : estimatedScale
+    estimatedShape: estimatedShape,
+    estimatedScale: estimatedScale
   }
 }
 
@@ -731,20 +736,18 @@ function test(startDate, today, formattedData, distType) {
 }
 
 export function monteCarloFunction(props) {
-  console.log(props);
   let today = new Date(props.data.simulationDate);
   const distType = props.data.distribution;
- 
+
   //set lead time max value
   props.data.leadTimeMaxValueOverride
     ? (leadTimeMaxValue = props.data.leadTimeMaxValueOverride)
     : (leadTimeMaxValue = 10000);
   props.data.ticketStartedCol || props.data.ticketStartedCol == "" ? ticketStartedCol = props.data.ticketStartedCol : ticketStartedCol = "New";
   const formattedData = removeNotWorkedTickets(dateChange(props.data.data));
-  console.log(formattedData)
-   //.replace(/-/g, '\/') exists to handle time change, see https://stackoverflow.com/questions/8215556/how-to-check-if-input-date-is-equal-to-todays-date
-   let startDate =
-   props.data.startDate == null || props.data.startDate == "" ? findEarliestDate(formattedData, false) : new Date(props.data.startDate.replace(/-/g, '/'));
+  //.replace(/-/g, '\/') exists to handle time change, see https://stackoverflow.com/questions/8215556/how-to-check-if-input-date-is-equal-to-todays-date
+  let startDate =
+    props.data.startDate == null || props.data.startDate == "" ? findEarliestDate(formattedData, false) : new Date(props.data.startDate.replace(/-/g, '/'));
   const leadTimeLastEleven = props.data.leadTimeOverride
     ? props.data.leadTimeOverride.split(",").map((x) => x * 1)
     : lastElevenTickets(
@@ -779,7 +782,6 @@ export function monteCarloFunction(props) {
     forplot.map((o) => o.Work_Added),
     workInParallelValue
   );
-  console.log(myBoyMonte)
   let plotdata = [];
   for (let i = 0; i < forplot.map((o) => o.Day).concat(myBoyMonte.bestAndWorstCaseForPlotObject.map((o) => o.day).slice(1)).length; i++) {
     plotdata.push({

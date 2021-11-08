@@ -3,12 +3,7 @@ import Papa from "papaparse";
 import Chart from "./Chart";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import IAM from "./TestData/IAM.json";
-import CEREBRAL from "./TestData/CEREBRAL.json";
-import Usability from "./TestData/UsabilityStudyFeedbackTFX.json";
-import MarkAsCorrect from "./TestData/MarkAsCorrect.json";
-import ResourceManagement from "./TestData/ResourceMangement.json";
-import SSBlackline from "./TestData/SpreadSheetsBlackline.json";
+
 import 'fontsource-roboto';
 import Button from '@material-ui/core/Button';
 
@@ -184,12 +179,7 @@ function exportToJson(exportObj, name) {
 
 function test(monteCarloResult) {
   let jsonFileArray = [
-    IAM,
-    CEREBRAL,
-    Usability,
-    MarkAsCorrect,
-    ResourceManagement,
-    SSBlackline,
+    
   ];
   const elements = jsonFileArray.map((jsonFile) => (
     <Chart data={jsonFile} monteCarloResult={monteCarloResult} />
